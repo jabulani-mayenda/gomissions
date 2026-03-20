@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 80">
+  <!-- Airtel Red Logo Style -->
+  <rect width="200" height="80" fill="white" rx="8"/>
+  <!-- A stylized wave/signal icon -->
+  <path d="M20,55 Q30,20 50,40 Q60,50 70,30" stroke="#e40000" stroke-width="6" fill="none" stroke-linecap="round"/>
+  <circle cx="75" cy="28" r="5" fill="#e40000"/>
+  <!-- Airtel text -->
+  <text x="88" y="45" font-family="Arial Black, sans-serif" font-weight="900" font-size="26" fill="#e40000" letter-spacing="-1">airtel</text>
+  <!-- Money text below -->
+  <text x="89" y="62" font-family="Arial, sans-serif" font-weight="600" font-size="13" fill="#555" letter-spacing="1">MONEY</text>
+</svg>

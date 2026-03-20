@@ -1,0 +1,17 @@
+{
+  "name": "Go For Mission",
+  "short_name": "GoForMission",
+  "description": "Reaching the unreachable and showing them their purpose through Christ.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1b4332",
+  "theme_color": "#1b4332",
+  "icons": [
+    {
+      "src": "/logo.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
