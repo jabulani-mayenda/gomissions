@@ -2,38 +2,41 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" href="./public/logo.png" />
+    <link rel="icon" type="image/jpeg" href="./public/images/logo.jpeg" />
+    <link rel="apple-touch-icon" href="./public/images/logo.jpeg" />
     <link rel="manifest" href="./public/manifest.json" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Go For Mission | Reaching the Unreachable</title>
-    <meta name="description" content="Go For Mission - Bringing purpose, hope and the light of Christ to Mangochi and across Malawi.">
+    <meta name="theme-color" content="#1b4332" />
+    <title>Go Missions International | Reaching the Unreachable in Mangochi, Malawi</title>
+    <meta name="description" content="Go Missions International — Established in Mangochi, Malawi to reach people and places dared to be visited. Evangelism, Church Planting, Youth Empowerment, and helping the less privileged.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./src/style.css" />
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <!-- FOUC prevention: hide until CSS + JS loads -->
     <style id="fouc-shield">html{visibility:hidden;opacity:0;transition:opacity 0.3s ease}</style>
   </head>
   <body>
-    <!-- Navbar -->
+
+    <!-- ===================== NAVBAR ===================== -->
     <header class="header" id="header">
       <div class="nav-container">
         <a href="#home" class="logo">
-          <img src="./public/logo.png" alt="GFM Logo" class="logo-img" />
-          <span>GO FOR MISSION</span>
+          <img src="./public/images/logo.jpeg" alt="Go Missions International Logo" class="logo-img" />
+          <span>GO MISSIONS INTERNATIONAL</span>
         </a>
         <nav class="navbar" id="navbar">
           <ul class="nav-menu">
-            <li><a href="#about" class="nav-link">About</a></li>
+            <li><a href="#about"   class="nav-link">About</a></li>
+            <li><a href="#founders" class="nav-link">Founders</a></li>
             <li><a href="#mission" class="nav-link">Mission</a></li>
             <li><a href="#programs" class="nav-link">Programs</a></li>
-            <li><a href="#impact" class="nav-link">Impact</a></li>
-            <li><a href="#testimonies" class="nav-link">Stories</a></li>
+            <li><a href="#family"  class="nav-link">Family &amp; Friends</a></li>
+            <li><a href="#gallery" class="nav-link">Gallery</a></li>
             <li><a href="#contact" class="nav-link">Contact</a></li>
           </ul>
           <div class="nav-buttons">
-            <a href="#donate" class="btn btn-outline-light">Donate</a>
-            <a href="#volunteer" class="btn btn-accent">Join Us</a>
+            <a href="#volunteer" class="btn btn-outline-light">Volunteer</a>
           </div>
         </nav>
         <button class="hamburger" id="hamburger" aria-label="Toggle Menu">
@@ -52,81 +55,174 @@
         <div class="hero-content">
           <div class="hero-tag animate-slide-up">Mangochi, Malawi</div>
           <h1 class="hero-title animate-slide-up delay-1">Reaching the <span class="text-accent">Unreachable</span></h1>
-          <p class="hero-subtitle animate-slide-up delay-2">Bringing purpose, hope, and the light of Christ to Mangochi and across Malawi.</p>
+          <p class="hero-subtitle animate-slide-up delay-2">"Go therefore and make disciples of all nations." — Matthew 28:19</p>
+          <div class="hero-verse animate-slide-up delay-3">
+            <i class="ph-fill ph-bible"></i>
+            His command is our first concern
+          </div>
           <div class="hero-actions animate-slide-up delay-3">
-            <a href="#donate" class="btn btn-accent btn-lg"><i class="ph-fill ph-heart"></i> Donate Now</a>
-            <a href="#about" class="btn btn-outline-light btn-lg"><i class="ph ph-arrow-down"></i> Learn More</a>
+            <a href="#about"   class="btn btn-accent btn-lg"><i class="ph ph-arrow-down"></i> Our Story</a>
+            <a href="#mission" class="btn btn-outline-light btn-lg"><i class="ph-fill ph-cross"></i> Our Mission</a>
           </div>
         </div>
-        <!-- Scroll indicator -->
-        <div class="scroll-down-indicator">
-          <span></span>
-        </div>
+        <div class="scroll-down-indicator"><span></span></div>
       </section>
 
       <!-- ===================== ABOUT ===================== -->
       <section class="section bg-light" id="about">
-        <div class="container layout-grid-2">
-          <div class="about-image-wrap">
-            <div class="about-image">
-              <img src="./src/assets/images/founder.jpeg" alt="Lyson Daud — Founder of GO FOR MISSION" loading="eager" />
-              <div class="experience-badge">
-                <span class="number">10+</span>
-                <span class="label">Years Serving</span>
-              </div>
+        <div class="container">
+          <div class="text-center reveal-up">
+            <span class="section-tag">About Us</span>
+            <h2 class="section-title">Who We Are</h2>
+            <p class="section-desc mt-2" style="margin-inline:auto;">
+              Go Missions International was established to reach people and places that are <strong>dared to be visited</strong>.
+              Formed in <strong>Mangochi, Malawi</strong> — its purpose is to minister unto the peoples of Mangochi
+              and beyond through the love and power of Christ.
+            </p>
+          </div>
+
+          <div class="about-pillars mt-5">
+            <div class="pillar-card reveal-up">
+              <div class="pillar-icon"><i class="ph-fill ph-megaphone-simple"></i></div>
+              <h3>Evangelism</h3>
+              <p>Taking the Good News to streets, homes, and the remote villages of Mangochi where others won't go.</p>
+            </div>
+            <div class="pillar-card reveal-up delay-1">
+              <div class="pillar-icon"><i class="ph-fill ph-church"></i></div>
+              <h3>Church Planting</h3>
+              <p>Raising up local churches that root themselves in communities and grow disciples for Christ.</p>
+            </div>
+            <div class="pillar-card reveal-up delay-2">
+              <div class="pillar-icon"><i class="ph-fill ph-star"></i></div>
+              <h3>Youth Empowerment</h3>
+              <p>Mentoring and equipping the next generation to discover purpose and rise into God-given leadership.</p>
+            </div>
+            <div class="pillar-card reveal-up delay-3">
+              <div class="pillar-icon"><i class="ph-fill ph-hand-heart"></i></div>
+              <h3>Helping Less Privileged</h3>
+              <p>Standing beside the overlooked — bringing practical love, care, and support to those the world forgets.</p>
             </div>
           </div>
-          <div class="about-content reveal-right">
-            <span class="section-tag">About Us</span>
-            <h2 class="section-title">Who is Lyson Daud?</h2>
-            <p class="section-desc">Born with a heart for the lost, Lyson Daud started GO FOR MISSION with a clear and bold calling — to step into the remote villages of Mangochi and bring the message of Christ where few others dare to go.</p>
-            <p class="section-desc mt-3">We go beyond preaching. We live among the people — providing hope, practical love, and helping everyone discover the profound purpose of living through faith in Christ.</p>
-            <ul class="values-list mt-4">
-              <li><i class="ph-fill ph-heart"></i> Pure Love and Compassion</li>
-              <li><i class="ph-fill ph-cross-hair"></i> Unwavering Faith</li>
-              <li><i class="ph-fill ph-users-three"></i> Empowering Communities</li>
-            </ul>
+        </div>
+      </section>
+
+      <!-- ===================== FOUNDERS ===================== -->
+      <section class="section founders-section" id="founders">
+        <div class="container">
+          <div class="text-center reveal-up">
+            <span class="section-tag">Leadership</span>
+            <h2 class="section-title text-white">Our Founders</h2>
+            <p class="section-desc mt-2 text-white-muted" style="margin-inline:auto;">
+              Called and commissioned to carry the Gospel to the overlooked and forgotten.
+            </p>
+          </div>
+
+          <div class="founders-grid mt-5">
+            <!-- Founder 1 — Eunice Lyson Daud -->
+            <div class="founder-card reveal-up">
+              <div class="founder-img-wrap">
+                <img src="./src/assets/images/founder.jpeg" alt="Eunice Lyson Daud — Founder of Go Missions International" />
+                <div class="founder-badge"><i class="ph-fill ph-cross"></i></div>
+              </div>
+              <div class="founder-info">
+                <h3>Eunice Lyson Daud</h3>
+                <span class="founder-role">Founder &amp; Mission Director</span>
+                <p>Born with a heart for the lost, Eunice started GO MISSIONS INTERNATIONAL with a bold calling — to step into the remote villages of Mangochi and bring the message of Christ where few others dare to go. Her aim: to go out for Christ.</p>
+                <div class="founder-verse">
+                  <i class="ph-fill ph-quotes"></i>
+                  "His command is our first concern"
+                </div>
+              </div>
+            </div>
+
+            <!-- Founder 2 — Placeholder -->
+            <div class="founder-card reveal-up delay-2">
+              <div class="founder-img-wrap placeholder-founder">
+                <div class="founder-placeholder-img">
+                  <i class="ph ph-user-circle"></i>
+                </div>
+                <div class="founder-badge"><i class="ph-fill ph-cross"></i></div>
+              </div>
+              <div class="founder-info">
+                <h3>Co-Founder</h3>
+                <span class="founder-role">Coming Soon</span>
+                <p>The second pillar of Go Missions International. Their story, calling and passion for the people of Mangochi will be shared here soon.</p>
+                <div class="founder-verse placeholder-verse">
+                  <i class="ph-fill ph-clock"></i>
+                  Profile coming soon
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
       <!-- ===================== MISSION & VISION ===================== -->
-      <section class="section mission-vision-section" id="mission">
+      <section class="section bg-light" id="mission">
         <div class="container">
           <div class="text-center reveal-up">
             <span class="section-tag">Our Purpose</span>
-            <h2 class="section-title">Mission &amp; Vision</h2>
-            <p class="section-desc mt-2" style="margin-inline:auto;">Guided by faith, driven by love — our purpose is clear.</p>
+            <h2 class="section-title">Mission, Vision &amp; Values</h2>
+            <p class="section-desc mt-2" style="margin-inline:auto;">Guided by faith, driven by love — rooted in the Word of God.</p>
           </div>
+
           <div class="mv-grid mt-5">
+
+            <!-- Mission -->
             <div class="mv-card reveal-up">
-              <div class="mv-card-img" style="background-image:url('https://picsum.photos/seed/mission1/600/300')"></div>
+              <div class="mv-card-top mission-bg">
+                <div class="mv-card-icon"><i class="ph-fill ph-target"></i></div>
+              </div>
               <div class="mv-card-body">
-                <div class="mv-icon"><i class="ph-fill ph-target"></i></div>
                 <h3>Our Mission</h3>
-                <p>To reach those who are unreachable. We are relentlessly committed to finding the isolated and overlooked, bringing spiritual breakthrough and practical love to every corner of Mangochi.</p>
+                <p>Go Missions International was established to reach people and places that are dared to be visited. We aim to go out for Christ — ministering to the peoples of Mangochi through evangelism, church planting, and serving the less privileged. Mission stops on the overlooked.</p>
+                <div class="mv-verse-block">
+                  <div class="mv-verse-ref">Matthew 28:19–20</div>
+                  <p class="mv-verse-text">"Go therefore and make disciples of all nations, baptizing them in the name of the Father and of the Son and of the Holy Spirit, teaching them to observe all that I have commanded you."</p>
+                  <div class="mv-tagline">His command is our first concern.</div>
+                </div>
               </div>
             </div>
+
+            <!-- Vision -->
             <div class="mv-card reveal-up delay-2">
-              <div class="mv-card-img" style="background-image:url('https://picsum.photos/seed/vision2/600/300')"></div>
+              <div class="mv-card-top vision-bg">
+                <div class="mv-card-icon"><i class="ph-fill ph-eye"></i></div>
+              </div>
               <div class="mv-card-body">
-                <div class="mv-icon"><i class="ph-fill ph-eye"></i></div>
                 <h3>Our Vision</h3>
-                <p>Every individual around Mangochi and across Malawi knowing the true purpose of living through Christ — seen, valued, and placed in this world for a divine reason.</p>
+                <p>To see people connected back to God. We believe that every soul in Mangochi and across Malawi deserves to know the love and reconciliation that Christ offers — no one is too far gone, no place too forgotten.</p>
+                <div class="mv-verse-block">
+                  <div class="mv-verse-ref">2 Corinthians 5:19</div>
+                  <p class="mv-verse-text">"God was in Christ reconciling the world to Himself, not counting their trespasses against them, and He has committed to us the word of reconciliation."</p>
+                </div>
               </div>
             </div>
+
+            <!-- Values -->
             <div class="mv-card reveal-up delay-3">
-              <div class="mv-card-img" style="background-image:url('https://picsum.photos/seed/values3/600/300')"></div>
+              <div class="mv-card-top values-bg">
+                <div class="mv-card-icon"><i class="ph-fill ph-hand-heart"></i></div>
+              </div>
               <div class="mv-card-body">
-                <div class="mv-icon"><i class="ph-fill ph-hand-heart"></i></div>
                 <h3>Our Values</h3>
-                <p>We operate in love, transparency, and authenticity. We believe every person deserves dignity and a chance to hear the truth that sets them free.</p>
+                <p>We are built on truth. We believe that knowing the truth transforms lives — and that every person, no matter how overlooked, deserves to experience that freedom. We go, we love, we serve, we stand firm in the Word.</p>
+                <div class="mv-verse-block">
+                  <div class="mv-verse-ref">John 8:32</div>
+                  <p class="mv-verse-text">"And you will know the truth, and the truth will set you free."</p>
+                </div>
               </div>
             </div>
+
           </div>
+
           <!-- Big quote -->
           <div class="purpose-quote reveal-up mt-5">
-            <p>"Finding your purpose through Christ means knowing you are seen, valued, and placed in this world for a divine reason."</p>
+            <div class="purpose-quote-inner">
+              <i class="ph-fill ph-quotes purpose-quote-icon"></i>
+              <p>"Aim to go out for Christ — His command is our first concern."</p>
+              <span class="purpose-quote-ref">Matthew 28:19–20</span>
+            </div>
           </div>
         </div>
       </section>
@@ -149,9 +245,9 @@
             <p>Villages Visited</p>
           </div>
           <div class="stat-item reveal-up delay-2">
-            <i class="ph-fill ph-hand-heart stat-icon"></i>
-            <h3 class="counter" data-target="120">0</h3>
-            <p>Volunteers</p>
+            <i class="ph-fill ph-church stat-icon"></i>
+            <h3 class="counter" data-target="12">0</h3>
+            <p>Churches Planted</p>
           </div>
           <div class="stat-item reveal-up delay-3">
             <i class="ph-fill ph-book-open stat-icon"></i>
@@ -165,12 +261,29 @@
       <section class="section bg-light" id="programs">
         <div class="container text-center reveal-up">
           <span class="section-tag">What We Do</span>
-          <h2 class="section-title">Our Outreach Programs</h2>
-          <p class="section-desc mt-2">Hover or tap each card to discover how we serve</p>
+          <h2 class="section-title">Our Programs</h2>
+          <p class="section-desc mt-2">Tap or hover each card to learn more about how we serve.</p>
         </div>
         <div class="container flip-grid mt-5">
 
           <div class="flip-card reveal-up">
+            <div class="flip-inner">
+              <div class="flip-front" style="background-image: url('https://picsum.photos/seed/church30/600/400')">
+                <div class="flip-front-overlay">
+                  <i class="ph-fill ph-church"></i>
+                  <h3>Church Planting &amp; Leadership</h3>
+                </div>
+              </div>
+              <div class="flip-back">
+                <i class="ph-fill ph-church flip-back-icon"></i>
+                <h3>Church Planting &amp; Leadership Empowerment</h3>
+                <p>Establishing local churches and raising up leaders who can disciple, serve and grow their communities in the truth of Christ.</p>
+                <a href="#contact" class="btn btn-accent mt-3">Get Involved</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="flip-card reveal-up delay-1">
             <div class="flip-inner">
               <div class="flip-front" style="background-image: url('https://picsum.photos/seed/evangel10/600/400')">
                 <div class="flip-front-overlay">
@@ -181,24 +294,7 @@
               <div class="flip-back">
                 <i class="ph-fill ph-megaphone-simple flip-back-icon"></i>
                 <h3>Evangelism Campaigns</h3>
-                <p>Taking the gospel to the streets and remote villages, organizing open-air gatherings and intimate family visits across Mangochi.</p>
-                <a href="#contact" class="btn btn-accent mt-3">Get Involved</a>
-              </div>
-            </div>
-          </div>
-
-          <div class="flip-card reveal-up delay-1">
-            <div class="flip-inner">
-              <div class="flip-front" style="background-image: url('https://picsum.photos/seed/community20/600/400')">
-                <div class="flip-front-overlay">
-                  <i class="ph-fill ph-hand-heart"></i>
-                  <h3>Community Support</h3>
-                </div>
-              </div>
-              <div class="flip-back">
-                <i class="ph-fill ph-hand-heart flip-back-icon"></i>
-                <h3>Community Support</h3>
-                <p>Feeding the hungry, supporting the elderly, and providing practical resources to struggling families in rural areas.</p>
+                <p>Taking the gospel to streets and remote villages — organizing open-air gatherings and intimate family visits across Mangochi.</p>
                 <a href="#contact" class="btn btn-accent mt-3">Get Involved</a>
               </div>
             </div>
@@ -215,7 +311,24 @@
               <div class="flip-back">
                 <i class="ph-fill ph-star flip-back-icon"></i>
                 <h3>Youth Empowerment</h3>
-                <p>Mentoring the next generation in Mangochi, helping young people discover their God-given potential and step into leadership.</p>
+                <p>Mentoring the next generation in Mangochi — helping young people discover their God-given potential and step into leadership.</p>
+                <a href="#contact" class="btn btn-accent mt-3">Get Involved</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="flip-card reveal-up delay-3">
+            <div class="flip-inner">
+              <div class="flip-front" style="background-image: url('https://picsum.photos/seed/community20/600/400')">
+                <div class="flip-front-overlay">
+                  <i class="ph-fill ph-hand-heart"></i>
+                  <h3>Helping Less Privileged</h3>
+                </div>
+              </div>
+              <div class="flip-back">
+                <i class="ph-fill ph-hand-heart flip-back-icon"></i>
+                <h3>Helping the Less Privileged</h3>
+                <p>Providing practical support to struggling families — food, clothing, care and compassion to those who are overlooked by the world.</p>
                 <a href="#contact" class="btn btn-accent mt-3">Get Involved</a>
               </div>
             </div>
@@ -224,135 +337,180 @@
         </div>
       </section>
 
-      <!-- ===================== GALLERY STRIP ===================== -->
-      <section class="section gallery-section">
+      <!-- ===================== FAMILY & FRIENDS ===================== -->
+      <section class="section" id="family">
+        <div class="container text-center reveal-up">
+          <span class="section-tag">Community</span>
+          <h2 class="section-title">Family &amp; Friends</h2>
+          <p class="section-desc mt-2">
+            The people who walk alongside Go Missions International — our community of supporters,
+            partners and friends who make this work possible.
+          </p>
+        </div>
+
+        <div class="container friends-grid mt-5" id="friends-grid">
+          <!-- Placeholder cards — replaced with real people when posted -->
+          <div class="friend-card reveal-up">
+            <div class="friend-img-wrap placeholder-img">
+              <i class="ph ph-user-circle"></i>
+            </div>
+            <div class="friend-info">
+              <h4>Friend &amp; Supporter</h4>
+              <p>A beloved member of the GFM family. Photos will be added here by the team.</p>
+            </div>
+          </div>
+          <div class="friend-card reveal-up delay-1">
+            <div class="friend-img-wrap placeholder-img">
+              <i class="ph ph-user-circle"></i>
+            </div>
+            <div class="friend-info">
+              <h4>Friend &amp; Supporter</h4>
+              <p>A beloved member of the GFM family. Photos will be added here by the team.</p>
+            </div>
+          </div>
+          <div class="friend-card reveal-up delay-2">
+            <div class="friend-img-wrap placeholder-img">
+              <i class="ph ph-user-circle"></i>
+            </div>
+            <div class="friend-info">
+              <h4>Friend &amp; Supporter</h4>
+              <p>A beloved member of the GFM family. Photos will be added here by the team.</p>
+            </div>
+          </div>
+          <div class="friend-card reveal-up delay-3">
+            <div class="friend-img-wrap placeholder-img">
+              <i class="ph ph-user-circle"></i>
+            </div>
+            <div class="friend-info">
+              <h4>Friend &amp; Supporter</h4>
+              <p>A beloved member of the GFM family. Photos will be added here by the team.</p>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ===================== GALLERY (Database) ===================== -->
+      <section class="section gallery-section" id="gallery">
         <div class="container text-center reveal-up">
           <span class="section-tag">In The Field</span>
           <h2 class="section-title">Life on Mission</h2>
-          <p class="section-desc mt-2">Glimpses from our work across Mangochi and Malawi</p>
+          <p class="section-desc mt-2">Moments, memories &amp; verses shared by the GFM team.</p>
+          <div id="db-status" class="db-status checking">
+            <span class="db-dot"></span> Connecting Database…
+          </div>
         </div>
-        <div class="gallery-strip mt-5">
+
+        <!-- Loading state -->
+        <div class="gallery-loading" id="gallery-loading">
+          <div class="spinner"></div>
+          <p>Loading gallery…</p>
+        </div>
+
+        <!-- Database not configured notice -->
+        <div class="gallery-notice" id="gallery-notice" style="display:none;">
+          <div class="container text-center">
+            <i class="ph ph-cloud-slash gallery-notice-icon"></i>
+            <h3>Gallery Not Yet Connected</h3>
+            <p>Set up the database to start posting photos and verses here.</p>
+            <a href="./admin.html" class="btn btn-primary mt-3" target="_blank">Go to Admin Panel</a>
+          </div>
+        </div>
+
+        <!-- Gallery grid (populated by Database) -->
+        <div class="db-gallery-grid" id="db-gallery" style="display:none;"></div>
+
+        <!-- Static fallback gallery strip for now -->
+        <div class="gallery-strip mt-5" id="static-gallery">
           <div class="gallery-item reveal-up">
-            <img src="https://picsum.photos/seed/field1/400/500" alt="Mission work in village" />
+            <img src="https://picsum.photos/seed/field1/400/500" alt="Mission work in village" loading="lazy" />
             <div class="gallery-overlay"><span>Village Visit</span></div>
           </div>
           <div class="gallery-item reveal-up delay-1">
-            <img src="https://picsum.photos/seed/field2/400/500" alt="Bible distribution" />
+            <img src="https://picsum.photos/seed/field2/400/500" alt="Bible distribution" loading="lazy" />
             <div class="gallery-overlay"><span>Bible Outreach</span></div>
           </div>
           <div class="gallery-item reveal-up delay-2">
-            <img src="https://picsum.photos/seed/field3/400/500" alt="Youth gathering" />
+            <img src="https://picsum.photos/seed/field3/400/500" alt="Youth gathering" loading="lazy" />
             <div class="gallery-overlay"><span>Youth Rally</span></div>
           </div>
           <div class="gallery-item reveal-up delay-3">
-            <img src="https://picsum.photos/seed/field4/400/500" alt="Community feeding" />
+            <img src="https://picsum.photos/seed/field4/400/500" alt="Community feeding" loading="lazy" />
             <div class="gallery-overlay"><span>Community Feed</span></div>
           </div>
           <div class="gallery-item reveal-up" style="--delay:0.45s">
-            <img src="https://picsum.photos/seed/field5/400/500" alt="Prayer gathering" />
+            <img src="https://picsum.photos/seed/field5/400/500" alt="Prayer gathering" loading="lazy" />
             <div class="gallery-overlay"><span>Prayer Night</span></div>
           </div>
         </div>
+
       </section>
 
-      <!-- ===================== TESTIMONIES ===================== -->
-      <section class="section bg-light" id="testimonies">
-        <div class="container">
-          <div class="text-center reveal-up">
-            <span class="section-tag">Real Impact</span>
-            <h2 class="section-title">Lives Changed Forever</h2>
-          </div>
-          <div class="testimonies-layout mt-5">
-            <!-- Featured large testimony -->
-            <div class="testimony-featured reveal-left">
-              <div class="testimony-quote-icon"><i class="ph-fill ph-quotes"></i></div>
-              <div class="testimony-avatar-wrap">
-                <img src="https://picsum.photos/seed/mary50/200/200" alt="Mary K." class="testimony-avatar large" />
-              </div>
-              <p class="testimony-text">"Before the mission came to our village, I felt lost and forgotten by the whole world. Now I know that God sees me. I found my real purpose."</p>
-              <h4 class="testimony-author">Mary K., Mangochi</h4>
-              <div class="testimony-stars">
-                <i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i>
-              </div>
-            </div>
-            <!-- Small testimony stack -->
-            <div class="testimony-stack">
-              <div class="testimony-mini reveal-right">
-                <img src="https://picsum.photos/seed/john60/100/100" alt="John T." class="testimony-avatar small" />
-                <div>
-                  <p>"The youth program kept me on the right path and now I lead others towards Christ."</p>
-                  <h4>John T., Mangochi</h4>
-                </div>
-              </div>
-              <div class="testimony-mini reveal-right delay-1">
-                <img src="https://picsum.photos/seed/agnes70/100/100" alt="Agnes B." class="testimony-avatar small" />
-                <div>
-                  <p>"When I had nothing, GO FOR MISSION stood with my family. They brought real love, not just words."</p>
-                  <h4>Agnes B., Rural Community</h4>
-                </div>
-              </div>
-              <div class="testimony-mini reveal-right delay-2">
-                <img src="https://picsum.photos/seed/david80/100/100" alt="David M." class="testimony-avatar small" />
-                <div>
-                  <p>"I received a Bible and heard the message that God loves me. Nothing has been the same since."</p>
-                  <h4>David M., Village Elder</h4>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ===================== DONATE ===================== -->
-      <section class="section donate-section" id="donate">
+      <!-- ===================== CONTACT / VOLUNTEER ===================== -->
+      <section class="section contact-section" id="volunteer">
         <div class="donate-bg-blob"></div>
         <div class="container layout-grid-2">
-          <div class="donate-content reveal-left">
-            <span class="section-tag light">Support the Mission</span>
-            <h2 class="section-title text-white">Your Donation Reaches the Unreachable</h2>
-            <p class="text-white section-desc" style="opacity:0.85;">Every kwacha you give goes directly towards community visits, evangelism campaigns, and supporting those in rural Mangochi.</p>
-            <div class="payment-methods mt-4">
-              <div class="payment-card">
-                <img src="./src/assets/images/airtel.svg" alt="Airtel Money" />
-                <p>Airtel Money</p>
-                <h4>+265 882 03 24 44</h4>
-              </div>
-              <div class="payment-card">
-                <img src="./src/assets/images/tnm.svg" alt="TNM Mpamba" />
-                <p>TNM Mpamba</p>
-                <h4>+265 882 03 24 44</h4>
-              </div>
-            </div>
-            <div class="donate-cta-buttons mt-4">
-              <a href="tel:+265882032444" class="btn btn-accent btn-lg w-full"><i class="ph-fill ph-phone-call"></i> Call to Give</a>
-              <a href="https://wa.me/265882032444?text=Hello%2C%20I%20would%20like%20to%20donate%20to%20GO%20FOR%20MISSION" target="_blank" class="btn btn-whatsapp btn-lg w-full"><i class="ph-fill ph-whatsapp-logo"></i> Donate via WhatsApp</a>
-            </div>
+          <div class="contact-info reveal-left">
+            <span class="section-tag light">Get Involved</span>
+            <h2 class="section-title text-white">Volunteer With Us</h2>
+            <p class="text-white section-desc" style="opacity:0.85;">
+              Join our outreach team and be part of something eternal. We go to the overlooked — come with us.
+            </p>
+            <ul class="contact-details mt-4">
+              <li>
+                <div class="contact-icon"><i class="ph-fill ph-map-pin"></i></div>
+                <div>
+                  <strong>Location</strong>
+                  <span>Mangochi, Malawi</span>
+                </div>
+              </li>
+              <li>
+                <a href="tel:+265882032444">
+                  <div class="contact-icon"><i class="ph-fill ph-phone-call"></i></div>
+                  <div>
+                    <strong>Call Us</strong>
+                    <span>+265 882 03 24 44</span>
+                  </div>
+                </a>
+              </li>
+              <li>
+                <a href="https://wa.me/265882032444" target="_blank">
+                  <div class="contact-icon whatsapp-icon"><i class="ph-fill ph-whatsapp-logo"></i></div>
+                  <div>
+                    <strong>WhatsApp</strong>
+                    <span>Message us on WhatsApp</span>
+                  </div>
+                </a>
+              </li>
+            </ul>
           </div>
-          <div class="volunteer-form-wrap reveal-right" id="volunteer">
+
+          <div class="volunteer-form-wrap reveal-right" id="contact">
             <div class="volunteer-form">
-              <h3>Volunteer With Us</h3>
+              <h3>Sign Up to Volunteer</h3>
               <p>Join our outreach team and change lives.</p>
               <form id="volunteer-form">
                 <div class="form-group">
-                  <label>Full Name</label>
-                  <input type="text" placeholder="Your full name" required>
+                  <label for="vol-name">Full Name</label>
+                  <input id="vol-name" type="text" placeholder="Your full name" required>
                 </div>
                 <div class="form-group">
-                  <label>Phone Number</label>
-                  <input type="tel" placeholder="+265 000 000 000" required>
+                  <label for="vol-phone">Phone Number</label>
+                  <input id="vol-phone" type="tel" placeholder="+265 000 000 000" required>
                 </div>
                 <div class="form-group">
-                  <label>How would you like to help?</label>
-                  <select required>
+                  <label for="vol-role">How would you like to help?</label>
+                  <select id="vol-role" required>
                     <option value="" disabled selected>Choose a role</option>
                     <option>Evangelism Team</option>
-                    <option>Community Visits</option>
+                    <option>Church Planting</option>
+                    <option>Youth Mentoring</option>
+                    <option>Community Support</option>
                     <option>Prayer Warrior</option>
-                    <option>Youth Mentor</option>
                     <option>Other</option>
                   </select>
                 </div>
-                <button type="submit" class="btn btn-primary btn-lg w-full mt-2">Sign Up Now</button>
+                <button type="submit" class="btn btn-primary btn-lg w-full mt-2" id="vol-submit">Sign Up Now</button>
               </form>
             </div>
           </div>
@@ -361,29 +519,31 @@
     </main>
 
     <!-- ===================== FOOTER ===================== -->
-    <footer class="footer" id="contact">
+    <footer class="footer" id="footer">
       <div class="container footer-grid">
         <div class="footer-brand">
           <div class="footer-logo">
-            <img src="./public/logo.png" alt="GFM" class="footer-logo-img" />
-            <span>GO FOR MISSION</span>
+            <img src="./public/images/logo.jpeg" alt="GFM" class="footer-logo-img" />
+            <span>GO MISSIONS INTERNATIONAL</span>
           </div>
-          <p class="mt-3">Reaching the unreachable and showing them their purpose through Christ.</p>
+          <p class="mt-3">Reaching the unreachable. Mission stops on the overlooked. His command is our first concern.</p>
+          <p class="footer-verse mt-2"><em>"Go therefore and make disciples of all nations." — Matthew 28:19</em></p>
           <div class="social-links mt-4">
-            <a href="#"><i class="ph-fill ph-facebook-logo"></i></a>
-            <a href="#"><i class="ph-fill ph-instagram-logo"></i></a>
-            <a href="https://wa.me/265882032444" target="_blank"><i class="ph-fill ph-whatsapp-logo"></i></a>
-            <a href="#"><i class="ph-fill ph-youtube-logo"></i></a>
+            <a href="#" aria-label="Facebook"><i class="ph-fill ph-facebook-logo"></i></a>
+            <a href="#" aria-label="Instagram"><i class="ph-fill ph-instagram-logo"></i></a>
+            <a href="https://wa.me/265882032444" target="_blank" aria-label="WhatsApp"><i class="ph-fill ph-whatsapp-logo"></i></a>
+            <a href="#" aria-label="YouTube"><i class="ph-fill ph-youtube-logo"></i></a>
           </div>
         </div>
         <div class="footer-links">
           <h4>Explore</h4>
           <ul>
             <li><a href="#about">About Us</a></li>
+            <li><a href="#founders">Founders</a></li>
+            <li><a href="#mission">Mission &amp; Vision</a></li>
             <li><a href="#programs">Programs</a></li>
-            <li><a href="#impact">Our Impact</a></li>
-            <li><a href="#testimonies">Stories</a></li>
-            <li><a href="#donate">Donate</a></li>
+            <li><a href="#family">Family &amp; Friends</a></li>
+            <li><a href="#gallery">Gallery</a></li>
           </ul>
         </div>
         <div class="footer-contact">
@@ -404,19 +564,24 @@
         </div>
       </div>
       <div class="footer-bottom text-center">
-        <p>&copy; <span id="year"></span> GO FOR MISSION. All rights reserved. Built with <i class="ph-fill ph-heart text-accent"></i> for Malawi.</p>
+        <p>&copy; <span id="year"></span> GO MISSIONS INTERNATIONAL — Mangochi, Malawi. Built with <i class="ph-fill ph-heart text-accent"></i> for the Kingdom.</p>
       </div>
     </footer>
 
     <!-- Floating WhatsApp -->
-    <a href="https://wa.me/265882032444" class="whatsapp-float" target="_blank">
+    <a href="https://wa.me/265882032444" class="whatsapp-float" target="_blank" aria-label="Chat on WhatsApp">
       <i class="ph-fill ph-whatsapp-logo"></i>
     </a>
 
-    <script type="module" src="/src/main.js"></script>
+    <script type="module" src="./src/main.js"></script>
     <script>
+      // Remove FOUC shield
+      (function(){
+        var f=document.getElementById('fouc-shield');
+        if(f){document.documentElement.style.visibility='visible';document.documentElement.style.opacity='1';f.remove();}
+      })();
       if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js'));
+        window.addEventListener('load', () => navigator.serviceWorker.register('./public/sw.js'));
       }
     </script>
   </body>

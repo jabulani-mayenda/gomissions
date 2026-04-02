@@ -1,0 +1,844 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="./public/admin-manifest.json" />
+  <meta name="theme-color" content="#081410" />
+  <!-- Apple Touch Icon -->
+  <link rel="apple-touch-icon" href="./public/images/logo.jpeg" />
+  <title>GMI Admin Dashboard</title>
+  <link rel="icon" type="image/jpeg" href="./public/images/logo.jpeg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <!-- Supabase JS Client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      --primary:       #1b4332;
+      --primary-dark:  #081410;
+      --primary-light: #2d6a4f;
+      --accent:        #d4a373;
+      --accent-hover:  #c49463;
+      --bg:            #f5f5f0;
+      --surface:       #ffffff;
+      --text:          #1f2937;
+      --text-muted:    #6b7280;
+      --border:        #e5e7eb;
+      --radius:        14px;
+      --transition:    all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      
+      --sidebar-width: 260px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    h1, h2, h3, h4, h5, h6 { font-family: 'Outfit', sans-serif; }
+
+    /* ---- INSTALL PROMPT ---- */
+    .install-prompt {
+      position: fixed; top: 0; left: 0; width: 100%;
+      background: var(--accent); color: #fff;
+      padding: 0.75rem 1rem; display: none; justify-content: space-between; align-items: center;
+      z-index: 10000; font-size: 0.9rem; font-weight: 600;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .install-prompt button {
+      background: #000; color: #fff; border: none; padding: 0.4rem 0.8rem;
+      border-radius: 6px; cursor: pointer; font-family: inherit; font-weight: bold;
+    }
+
+    /* ---- LOCK SCREEN ---- */
+    #lock-screen {
+      position: fixed; inset: 0;
+      background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+      display: flex; align-items: center; justify-content: center;
+      z-index: 9999;
+    }
+    .lock-box {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      backdrop-filter: blur(12px);
+      border-radius: 24px; padding: 3rem 2rem;
+      width: 90%; max-width: 400px; text-align: center;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    }
+    .lock-logo {
+      width: 80px; height: 80px; border-radius: 50%;
+      object-fit: cover; border: 3px solid var(--accent);
+      margin: 0 auto 1.5rem; display: block;
+    }
+    .lock-box h2 { font-size: 1.8rem; color: #fff; margin-bottom: 0.5rem; }
+    .lock-box p { color: rgba(255,255,255,0.7); font-size: 0.95rem; margin-bottom: 2rem; }
+    
+    .lock-input {
+      width: 100%; padding: 1rem; border: 2px solid rgba(255,255,255,0.2);
+      border-radius: 12px; background: rgba(255,255,255,0.1);
+      color: #fff; font-size: 1.2rem; font-family: inherit;
+      outline: none; text-align: center; letter-spacing: 4px;
+      transition: var(--transition); margin-bottom: 1rem;
+    }
+    .lock-input::placeholder { letter-spacing: 2px; color: rgba(255,255,255,0.3); }
+    .lock-input:focus { border-color: var(--accent); background: rgba(255,255,255,0.15); }
+    
+    .btn {
+      width: 100%; padding: 1rem;
+      border: none; border-radius: 12px; cursor: pointer;
+      font-family: inherit; font-size: 1rem; font-weight: 700;
+      display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+      transition: var(--transition);
+    }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: var(--primary-light); transform: translateY(-2px); box-shadow: 0 6px 15px rgba(27,67,50,0.2); }
+    .btn-accent { background: var(--accent); color: #fff; }
+    .btn-accent:hover { background: var(--accent-hover); transform: translateY(-2px); box-shadow: 0 6px 15px rgba(212,163,115,0.3); }
+    
+    .lock-error { color: #f87171; font-size: 0.9rem; margin-top: 1rem; display: none; }
+
+    /* ---- DASHBOARD LAYOUT ---- */
+    #admin-app { display: none; height: 100vh; overflow: hidden; }
+    .dashboard-layout { display: flex; height: 100%; }
+    
+    /* SIDEBAR */
+    .sidebar {
+      width: var(--sidebar-width); background: var(--primary-dark);
+      color: #fff; display: flex; flex-direction: column;
+      border-right: 1px solid rgba(255,255,255,0.05);
+      z-index: 100;
+    }
+    .sidebar-header {
+      padding: 2rem 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.05);
+      display: flex; align-items: center; gap: 1rem;
+    }
+    .sidebar-logo { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--accent); }
+    .sidebar-header h2 { font-size: 1.25rem; font-weight: 900; line-height: 1.2; }
+    .sidebar-header span { display: block; font-family: 'Inter', sans-serif; font-size: 0.75rem; color: var(--accent); font-weight: 600; text-transform: uppercase; letter-spacing: 1px;}
+    
+    .sidebar-nav { flex: 1; padding: 1.5rem 1rem; overflow-y: auto; }
+    .nav-item {
+      width: 100%; text-align: left; background: transparent; border: none;
+      color: rgba(255,255,255,0.6); padding: 1rem; border-radius: 10px;
+      font-family: inherit; font-size: 1rem; font-weight: 600;
+      display: flex; align-items: center; gap: 0.75rem; cursor: pointer;
+      transition: var(--transition); margin-bottom: 0.5rem;
+    }
+    .nav-item i { font-size: 1.25rem; }
+    .nav-item:hover { background: rgba(255,255,255,0.05); color: #fff; }
+    .nav-item.active { background: var(--primary); color: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+    
+    .sidebar-footer { padding: 1.5rem; border-top: 1px solid rgba(255,255,255,0.05); }
+    .sidebar-footer a { color: rgba(255,255,255,0.6); text-decoration: none; font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem; transition: var(--transition); }
+    .sidebar-footer a:hover { color: var(--accent); }
+
+    /* MAIN CONTENT */
+    .main-content {
+      flex: 1; overflow-y: auto; background: var(--bg);
+      position: relative;
+    }
+    .content-header {
+      background: var(--surface); padding: 1.5rem 2.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center;
+      position: sticky; top: 0; z-index: 10;
+    }
+    .content-header h1 { font-size: 1.5rem; color: var(--primary); }
+    
+    .content-body { padding: 2.5rem; max-width: 1100px; margin: 0 auto; }
+    
+    /* PANELS */
+    .panel { display: none; animation: fadeIn 0.4s ease forwards; }
+    .panel.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes spin { 100% { transform: rotate(360deg); } }
+
+    /* ---- OVERVIEW ---- */
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem; }
+    .stat-card {
+      background: var(--surface); border-radius: var(--radius); padding: 1.5rem;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.04); display: flex; align-items: center; gap: 1.25rem;
+      border-bottom: 4px solid var(--primary);
+    }
+    .stat-card.accent { border-bottom-color: var(--accent); }
+    .stat-icon {
+      width: 50px; height: 50px; border-radius: 12px; background: rgba(27,67,50,0.08);
+      display: flex; align-items: center; justify-content: center; font-size: 1.75rem; color: var(--primary);
+    }
+    .stat-card.accent .stat-icon { background: rgba(212,163,115,0.15); color: var(--accent-hover); }
+    .stat-info h3 { font-size: 1.8rem; margin-bottom: 0.2rem; color: var(--text); }
+    .stat-info p { font-size: 0.9rem; color: var(--text-muted); font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    .quick-actions-bar {
+      display: flex; gap: 1rem; background: var(--surface); padding: 1.5rem; border-radius: var(--radius);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.04); margin-bottom: 2.5rem; flex-wrap: wrap;
+    }
+    .quick-actions-bar > p { font-weight: 600; color: var(--primary); display: flex; align-items: center; gap: 0.5rem; padding-right: 1rem; border-right: 1px solid var(--border); }
+    
+    /* ---- FORMS ---- */
+    .form-card {
+      background: var(--surface); border-radius: var(--radius); padding: 2.5rem;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+    }
+    .form-card h2 { font-size: 1.4rem; color: var(--primary); margin-bottom: 0.5rem; }
+    .form-card > p { color: var(--text-muted); margin-bottom: 2rem; font-size: 0.95rem; }
+
+    .form-group { margin-bottom: 1.5rem; }
+    .form-group label {
+      display: block; font-size: 0.85rem; font-weight: 700;
+      color: var(--primary); margin-bottom: 0.5rem;
+    }
+    .form-group input, .form-group textarea, .form-group select {
+      width: 100%; padding: 1rem 1.25rem; border: 2px solid var(--border);
+      border-radius: 10px; font-family: inherit; font-size: 1rem;
+      background: #f9fafb; outline: none; transition: var(--transition);
+    }
+    .form-group textarea { resize: vertical; min-height: 100px; }
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+      border-color: var(--primary); background: #fff;
+    }
+
+    /* DRAG & DROP */
+    .drop-zone {
+      border: 2px dashed #d1d5db; border-radius: 12px; padding: 3rem 2rem;
+      text-align: center; cursor: pointer; transition: var(--transition);
+      background: #f9fafb; position: relative;
+    }
+    .drop-zone:hover, .drop-zone.dragging { border-color: var(--accent); background: #fffbf5; }
+    .drop-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+    .drop-icon { font-size: 3rem; color: #d1d5db; margin-bottom: 1rem; display: block; transition: var(--transition); }
+    .drop-zone:hover .drop-icon { color: var(--accent); }
+    .drop-zone p { color: var(--text-muted); font-size: 0.95rem; }
+    .img-preview { margin-top: 1.5rem; max-height: 250px; border-radius: 8px; display: none; object-fit: contain; }
+
+    /* ---- MANAGE POSTS ---- */
+    .filters { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; }
+    .filter-btn {
+      padding: 0.5rem 1rem; border: 1px solid var(--border); border-radius: 20px;
+      background: #fff; cursor: pointer; font-family: inherit; font-size: 0.9rem; font-weight: 600;
+      color: var(--text-muted); transition: var(--transition);
+    }
+    .filter-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .filter-btn:hover:not(.active) { background: #f3f4f6; }
+
+    .post-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem;
+    }
+    .post-card {
+      background: var(--surface); border-radius: 12px; overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05); position: relative;
+    }
+    .post-card-img { width: 100%; height: 180px; object-fit: cover; background: #f3f4f6; display: flex; align-items: center; justify-content: center; }
+    .post-card-img i { font-size: 3rem; color: #d1d5db; }
+    .post-type-badge {
+      position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
+      color: #fff; font-size: 0.75rem; font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 6px;
+      display: flex; align-items: center; gap: 0.3rem; text-transform: uppercase;
+    }
+    .post-card-body { padding: 1.25rem; }
+    .post-card-verse { font-weight: 700; color: var(--primary); margin-bottom: 0.5rem; font-size: 1.05rem; }
+    .post-card-text { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.75rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .post-card-meta { font-size: 0.8rem; color: #9ca3af; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 1rem; }
+    
+    .btn-delete {
+      background: #fee2e2; color: #ef4444; border: none; padding: 0.4rem; border-radius: 6px;
+      cursor: pointer; transition: var(--transition); display: flex; align-items: center; justify-content: center;
+    }
+    .btn-delete:hover { background: #ef4444; color: #fff; }
+    .posts-empty { text-align: center; padding: 4rem 1rem; color: var(--text-muted); background: var(--surface); border-radius: var(--radius); }
+
+    /* ---- SETTINGS / SETUP ---- */
+    .setup-guide {
+      background: var(--surface); border-radius: var(--radius); padding: 2.5rem; margin-top: 2rem;
+      border-top: 4px solid var(--accent); box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+    }
+    .step { display: flex; gap: 1rem; margin-bottom: 1.5rem; padding: 1.25rem; background: #f9fafb; border-radius: 12px; border-left: 4px solid var(--accent); }
+    .step-num { font-family: 'Outfit'; font-size: 1.5rem; font-weight: 900; color: var(--accent); flex-shrink: 0; }
+    .step h4 { margin-bottom: 0.25rem; font-size: 1.1rem; }
+    .step p { color: var(--text-muted); font-size: 0.9rem; }
+    code { background: #e5e7eb; padding: 0.1rem 0.4rem; border-radius: 4px; font-family: monospace; font-size: 0.85em; }
+
+    .status-banner {
+      padding: 1rem 1.5rem; border-radius: 10px; display: flex; align-items: center; gap: 1rem;
+      font-weight: 600; margin-bottom: 2rem;
+    }
+    .status-banner.error { background: #fef2f2; border: 1px solid #f87171; color: #b91c1c; }
+    .status-banner.success { background: #f0fdf4; border: 1px solid #4ade80; color: #15803d; }
+
+    /* ---- TOAST ---- */
+    .toast {
+      position: fixed; bottom: 2rem; right: 2rem;
+      background: var(--primary-dark); color: #fff; padding: 1rem 1.5rem;
+      border-radius: 12px; display: flex; align-items: center; gap: 0.75rem;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2); font-weight: 600; font-size: 0.95rem;
+      transform: translateY(120px); opacity: 0; transition: var(--transition); z-index: 10000;
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast.error { background: #ef4444; }
+
+    /* ---- RESPONSIVE MOBILE ---- */
+    @media (max-width: 768px) {
+      .dashboard-layout { flex-direction: column; }
+      .sidebar {
+        width: 100%; height: auto; flex-direction: row; align-items: center; justify-content: space-between;
+        padding: 0.75rem 1rem; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.05);
+      }
+      .sidebar-header { padding: 0; border: none; }
+      .sidebar-header h2 { font-size: 1.1rem; }
+      .sidebar-logo { width: 36px; height: 36px; }
+      .sidebar-nav {
+        position: fixed; bottom: 0; left: 0; width: 100%; height: 70px;
+        background: var(--primary-dark); display: flex; padding: 0; border-top: 1px solid rgba(255,255,255,0.05);
+        z-index: 100;
+      }
+      .nav-item {
+        flex-direction: column; gap: 4px; padding: 0.5rem; margin: 0; border-radius: 0;
+        justify-content: center; font-size: 0.75rem; text-align: center;
+      }
+      .nav-item i { font-size: 1.5rem; }
+      .nav-item.active { box-shadow: inset 0 4px 0 var(--accent); }
+      .sidebar-footer { display: none; }
+      
+      .content-header { padding: 1rem; }
+      .content-body { padding: 1rem; padding-bottom: 90px; }
+      .form-card { padding: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- PWA Install Prompt -->
+  <div id="install-prompt" class="install-prompt">
+    <span>Install Admin App for offline access 🚀</span>
+    <button id="btn-install">Install</button>
+  </div>
+
+  <!-- LOCK SCREEN -->
+  <div id="lock-screen">
+    <div class="lock-box">
+      <img src="./public/images/logo.jpeg" alt="GMI" class="lock-logo" />
+      <h2>Admin Login</h2>
+      <p>Enter the security pin to access the dashboard.</p>
+      <input type="password" id="pin-input" class="lock-input" placeholder="••••" maxlength="12" />
+      <button class="btn btn-accent" id="btn-unlock">
+        <i class="ph-bold ph-lock-open"></i> Unlock
+      </button>
+      <div id="lock-error" class="lock-error">Incorrect PIN.</div>
+    </div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="admin-app">
+    <div class="dashboard-layout">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <img src="./public/images/logo.jpeg" alt="GMI" class="sidebar-logo" />
+          <div>
+            <h2>GMI</h2>
+            <span>Admin Panel</span>
+          </div>
+        </div>
+        <nav class="sidebar-nav">
+          <button class="nav-item active" data-target="overview">
+            <i class="ph-fill ph-squares-four"></i> Overview
+          </button>
+          <button class="nav-item" data-target="photo">
+            <i class="ph-fill ph-camera-plus"></i> Post Photo
+          </button>
+          <button class="nav-item" data-target="verse">
+            <i class="ph-fill ph-bible"></i> Post Verse
+          </button>
+          <button class="nav-item" data-target="manage">
+            <i class="ph-fill ph-folder-open"></i> Manage Posts
+          </button>
+          <button class="nav-item" data-target="settings">
+            <i class="ph-fill ph-gear"></i> Setup
+          </button>
+        </nav>
+        <div class="sidebar-footer">
+          <a href="./index.html"><i class="ph-bold ph-arrow-left"></i> Back to Main Site</a>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <header class="content-header">
+          <h1 id="page-title">Overview</h1>
+        </header>
+
+        <div class="content-body">
+          
+          <!-- OVERVIEW PANEL -->
+          <div id="panel-overview" class="panel active">
+            <div class="stats-grid">
+              <div class="stat-card">
+                <div class="stat-icon"><i class="ph-fill ph-images"></i></div>
+                <div class="stat-info">
+                  <h3 id="stat-photos">0</h3>
+                  <p>Total Photos</p>
+                </div>
+              </div>
+              <div class="stat-card accent">
+                <div class="stat-icon"><i class="ph-fill ph-bible"></i></div>
+                <div class="stat-info">
+                  <h3 id="stat-verses">0</h3>
+                  <p>Total Verses</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="quick-actions-bar">
+              <p><i class="ph-fill ph-lightning"></i> Quick Actions</p>
+              <button class="btn btn-primary" style="width:auto; padding: 0.5rem 1rem;" onclick="switchTab('photo')">
+                <i class="ph-bold ph-plus"></i> Add Photo
+              </button>
+              <button class="btn btn-accent" style="width:auto; padding: 0.5rem 1rem;" onclick="switchTab('verse')">
+                <i class="ph-bold ph-plus"></i> Add Verse
+              </button>
+            </div>
+
+            <!-- Dashboard Connection Notice -->
+            <div id="db-status-banner" class="status-banner error" style="display:none;">
+              <i class="ph-fill ph-warning-circle" style="font-size:1.5rem;"></i>
+              <div>
+                Database disconnected. Please check Setup tab to configure Supabase.
+              </div>
+            </div>
+          </div>
+
+          <!-- POST PHOTO PANEL -->
+          <div id="panel-photo" class="panel">
+            <div class="form-card">
+              <h2>Post a Photo</h2>
+              <p>Upload a moment from the mission field directly to the website gallery.</p>
+              <form id="form-photo">
+                <div class="form-group">
+                  <div class="drop-zone" id="drop-zone">
+                    <input type="file" id="photo-file" accept="image/*" required />
+                    <i class="ph-fill ph-image drop-icon"></i>
+                    <p><strong>Click to browse</strong> or drag & drop</p>
+                    <img id="photo-preview" class="img-preview" />
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="photo-caption">Caption</label>
+                  <textarea id="photo-caption" placeholder="Describe this moment..."></textarea>
+                </div>
+                <div class="form-group">
+                  <label for="photo-verse">Associated Bible Verse (Optional)</label>
+                  <input type="text" id="photo-verse" placeholder="e.g. John 3:16" />
+                </div>
+                <button type="submit" id="btn-submit-photo" class="btn btn-primary">
+                  <i class="ph-bold ph-paper-plane-tilt"></i> Upload Photo
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <!-- POST VERSE PANEL -->
+          <div id="panel-verse" class="panel">
+            <div class="form-card">
+              <h2>Post a Verse</h2>
+              <p>Share a powerful scripture with the community.</p>
+              <form id="form-verse">
+                <div class="form-group">
+                  <label for="verse-text">Scripture Text *</label>
+                  <textarea id="verse-text" placeholder="For God so loved the world..." required style="min-height:120px; font-size: 1.1rem; border-left: 4px solid var(--accent);"></textarea>
+                </div>
+                <div class="form-group">
+                  <label for="verse-ref">Reference *</label>
+                  <input type="text" id="verse-ref" placeholder="e.g. John 3:16" required />
+                </div>
+                <div class="form-group">
+                  <label for="verse-notes">Additional Notes</label>
+                  <textarea id="verse-notes" placeholder="Any context or thoughts..."></textarea>
+                </div>
+                <button type="submit" id="btn-submit-verse" class="btn btn-accent">
+                  <i class="ph-bold ph-paper-plane-tilt"></i> Share Verse
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <!-- MANAGE POSTS PANEL -->
+          <div id="panel-manage" class="panel">
+            <div class="filters">
+              <button class="filter-btn active" data-filter="all">All</button>
+              <button class="filter-btn" data-filter="photo">Photos Only</button>
+              <button class="filter-btn" data-filter="verse">Verses Only</button>
+            </div>
+            
+            <div id="manage-grid" class="post-grid">
+              <!-- Rendered via JS -->
+              <div class="posts-empty" style="grid-column: 1 / -1;">
+                <i class="ph-fill ph-spinner-gap" style="font-size:2rem; animation: spin 1s linear infinite;"></i>
+                <p>Loading posts...</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- SETTINGS PANEL -->
+          <div id="panel-settings" class="panel">
+            <div class="form-card">
+              <h2><i class="ph-bold ph-database"></i> Supabase Setup</h2>
+              <p>Configure the connection to your custom database.</p>
+              
+              <div class="form-group">
+                <label>Project URL</label>
+                <input type="text" id="supa-url" readonly style="background:var(--bg); border:none;" />
+              </div>
+              <div class="form-group">
+                <label>Anon Public Key</label>
+                <input type="password" id="supa-key" readonly style="background:var(--bg); border:none;" value="••••••••••••••••" />
+              </div>
+              <p style="font-size:0.85rem; color:var(--text-muted);"><i class="ph-fill ph-info"></i> Edit <code>supabase-config.js</code> to change these values permanently.</p>
+            </div>
+
+            <div class="setup-guide">
+              <h3 style="color:var(--primary); margin-bottom:1rem;">SQL Setup Checklist</h3>
+              <p style="margin-bottom:1.5rem; color:var(--text-muted);">Ensure you have created the storage buckets and tables in your Supabase project.</p>
+              
+              <div class="step">
+                <span class="step-num">1</span>
+                <div>
+                  <h4>Create Storage Bucket</h4>
+                  <p>In Supabase, go to Storage -> Create a new bucket named <code>gallery</code>. Make sure it is marked as <strong>Public</strong>.</p>
+                </div>
+              </div>
+              <div class="step">
+                <span class="step-num">2</span>
+                <div>
+                  <h4>Run SQL Script</h4>
+                  <p>Go to SQL Editor and run:</p>
+                  <pre style="background:#1f2937; color:#f8f8f2; padding:1rem; border-radius:8px; overflow-x:auto; margin-top:0.5rem; font-size:0.85rem;"><code>-- 1. Create Posts Table
+create table posts (
+  id uuid primary key default gen_random_uuid(),
+  type text not null,
+  section text default 'gallery',
+  image_url text,
+  caption text,
+  verse_text text,
+  verse_ref text,
+  posted_by text default 'GMI Team',
+  created_at timestamptz default now()
+);
+
+-- 2. Create Volunteers Table
+create table volunteers (
+  id uuid primary key default gen_random_uuid(),
+  name text,
+  phone text,
+  role text,
+  created_at timestamptz default now()
+);
+
+-- 3. Enable RLS (Row Level Security)
+alter table posts enable row level security;
+alter table volunteers enable row level security;
+
+-- 4. Setup Basic Policies
+-- Allow public to view posts
+create policy "Public read posts" on posts for select using (true);
+-- Allow public to insert volunteers (from website form)
+create policy "Public insert volunteers" on volunteers for insert with check (true);
+-- Allow admin to manage posts (replace with auth logic later)
+create policy "Admin manage posts" on posts for all using (true) with check (true);</code></pre>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"><i class="ph-fill ph-check-circle"></i> <span>Success</span></div>
+
+  <script type="module">
+    import { SUPABASE_URL, SUPABASE_ANON } from './supabase-config.js';
+    
+    // --- PIN SYSTEM ---
+    const PIN = "admin1234";
+    const lockScreen = document.getElementById('lock-screen');
+    const adminApp = document.getElementById('admin-app');
+    const pinInput = document.getElementById('pin-input');
+    
+    if (sessionStorage.getItem('gmi_auth') === 'true') {
+      lockScreen.style.display = 'none';
+      adminApp.style.display = 'block';
+      initApp();
+    }
+
+    document.getElementById('btn-unlock').addEventListener('click', attemptLogin);
+    pinInput.addEventListener('keypress', e => e.key === 'Enter' && attemptLogin());
+
+    function attemptLogin() {
+      if (pinInput.value === PIN) {
+        sessionStorage.setItem('gmi_auth', 'true');
+        lockScreen.style.display = 'none';
+        adminApp.style.display = 'block';
+        initApp();
+      } else {
+        const err = document.getElementById('lock-error');
+        err.style.display = 'block';
+        pinInput.style.borderColor = '#ef4444';
+        setTimeout(() => { err.style.display = 'none'; pinInput.style.borderColor=''; }, 2000);
+      }
+    }
+
+    // --- NAVIGATION ---
+    const navItems = document.querySelectorAll('.nav-item');
+    const panels = document.querySelectorAll('.panel');
+    const title = document.getElementById('page-title');
+
+    window.switchTab = function(target) {
+      navItems.forEach(n => n.classList.remove('active'));
+      panels.forEach(p => p.classList.remove('active'));
+      
+      const btn = document.querySelector(`.nav-item[data-target="${target}"]`);
+      if(btn) btn.classList.add('active');
+      document.getElementById(`panel-${target}`).classList.add('active');
+      
+      const titles = { overview: "Overview", photo: "Post Photo", verse: "Post Verse", manage: "Manage Posts", settings: "Setup & Config" };
+      title.innerText = titles[target];
+      if(target === 'manage') loadPosts();
+    };
+
+    navItems.forEach(btn => btn.addEventListener('click', () => switchTab(btn.dataset.target)));
+
+    // --- SUPABASE CLIENT ---
+    let supabase;
+    
+    function initApp() {
+      document.getElementById('supa-url').value = SUPABASE_URL;
+      if(!SUPABASE_URL || SUPABASE_URL.includes('your-project')) {
+        document.getElementById('db-status-banner').style.display = 'flex';
+        return;
+      }
+      
+      supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+      loadDashboardStats();
+    }
+
+    function showToast(msg, isErr=false) {
+      const t = document.getElementById('toast');
+      t.className = 'toast show ' + (isErr ? 'error' : '');
+      t.innerHTML = `<i class="ph-fill ph-${isErr ? 'warning-circle' : 'check-circle'}"></i> <span>${msg}</span>`;
+      setTimeout(() => t.classList.remove('show'), 3000);
+    }
+
+    // --- OVERVIEW STATS ---
+    async function loadDashboardStats() {
+      if(!supabase) return;
+      try {
+        const { data, error } = await supabase.from('posts').select('type');
+        if(error) throw error;
+        const photos = data.filter(d => d.type === 'photo').length;
+        const verses = data.filter(d => d.type === 'verse').length;
+        document.getElementById('stat-photos').innerText = photos;
+        document.getElementById('stat-verses').innerText = verses;
+      } catch (err) {
+        console.error("Stats error", err);
+      }
+    }
+
+    // --- UPLOAD SYSTEM ---
+    const dropZone = document.getElementById('drop-zone');
+    const fileInput = document.getElementById('photo-file');
+    const preview = document.getElementById('photo-preview');
+    let selectedFile = null;
+
+    dropZone.addEventListener('click', () => fileInput.click());
+    dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragging'); });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragging'));
+    dropZone.addEventListener('drop', e => {
+      e.preventDefault(); dropZone.classList.remove('dragging');
+      if(e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+    });
+    fileInput.addEventListener('change', e => {
+      if(e.target.files[0]) handleFile(e.target.files[0]);
+    });
+
+    function handleFile(f) {
+      if(!f.type.startsWith('image/')) return showToast("Only images allowed", true);
+      selectedFile = f;
+      const reader = new FileReader();
+      reader.onload = e => {
+        preview.src = e.target.result;
+        preview.style.display = 'block';
+        dropZone.querySelector('i').style.display = 'none';
+        dropZone.querySelector('p').style.display = 'none';
+      };
+      reader.readAsDataURL(f);
+    }
+
+    // --- FORM: PHOTO ---
+    document.getElementById('form-photo').addEventListener('submit', async e => {
+      e.preventDefault();
+      if(!supabase) return showToast("DB not connected", true);
+      if(!selectedFile) return showToast("Select an image first", true);
+      
+      const btn = document.getElementById('btn-submit-photo');
+      btn.disabled = true; btn.innerHTML = '<i class="ph-bold ph-spinner-gap"></i> Uploading...';
+
+      try {
+        const fileExt = selectedFile.name.split('.').pop();
+        const fileName = `${Math.random()}.${fileExt}`;
+        
+        // Upload image
+        const { error: upErr, data: upData } = await supabase.storage.from('gallery').upload(fileName, selectedFile);
+        if(upErr) throw upErr;
+
+        const { data: pubUrl } = supabase.storage.from('gallery').getPublicUrl(fileName);
+
+        // Insert Record
+        const { error: dbErr } = await supabase.from('posts').insert([{
+          type: 'photo',
+          image_url: pubUrl.publicUrl,
+          caption: document.getElementById('photo-caption').value,
+          verse_ref: document.getElementById('photo-verse').value
+        }]);
+        if(dbErr) throw dbErr;
+
+        showToast("Photo uploaded successfully!");
+        e.target.reset();
+        preview.style.display = 'none';
+        dropZone.querySelector('i').style.display = 'block';
+        dropZone.querySelector('p').style.display = 'block';
+        selectedFile = null;
+        loadDashboardStats();
+      } catch (err) {
+        showToast("Error: " + err.message, true);
+      }
+      btn.disabled = false; btn.innerHTML = '<i class="ph-bold ph-paper-plane-tilt"></i> Upload Photo';
+    });
+
+    // --- FORM: VERSE ---
+    document.getElementById('form-verse').addEventListener('submit', async e => {
+      e.preventDefault();
+      if(!supabase) return showToast("DB not connected", true);
+      const btn = document.getElementById('btn-submit-verse');
+      btn.disabled = true;
+
+      try {
+        const { error } = await supabase.from('posts').insert([{
+          type: 'verse',
+          verse_text: document.getElementById('verse-text').value,
+          verse_ref: document.getElementById('verse-ref').value,
+          caption: document.getElementById('verse-notes').value
+        }]);
+        if(error) throw error;
+        showToast("Verse posted successfully!");
+        e.target.reset();
+        loadDashboardStats();
+      } catch (err) {
+        showToast("Error: " + err.message, true);
+      }
+      btn.disabled = false;
+    });
+
+    // --- MANAGE POSTS ---
+    let allPosts = [];
+    let currentFilter = 'all';
+
+    async function loadPosts() {
+      if(!supabase) return;
+      const grid = document.getElementById('manage-grid');
+      // grid.innerHTML = '<div class="posts-empty" style="grid-column: 1/-1;">Loading...</div>';
+      
+      try {
+        const { data, error } = await supabase.from('posts').select('*').order('created_at', { ascending: false });
+        if(error) throw error;
+        allPosts = data;
+        renderManageGrid();
+      } catch(err) {
+        grid.innerHTML = `<div class="posts-empty" style="grid-column: 1/-1;"><i class="ph-fill ph-warning-circle"></i><br/>${err.message}</div>`;
+      }
+    }
+
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentFilter = btn.dataset.filter;
+        renderManageGrid();
+      });
+    });
+
+    function renderManageGrid() {
+      const grid = document.getElementById('manage-grid');
+      const filtered = currentFilter === 'all' ? allPosts : allPosts.filter(p => p.type === currentFilter);
+      
+      if(filtered.length === 0) {
+        grid.innerHTML = `<div class="posts-empty" style="grid-column: 1/-1;"><i class="ph-fill ph-ghost"></i><br/>No posts found.</div>`;
+        return;
+      }
+
+      grid.innerHTML = filtered.map(p => `
+        <div class="post-card">
+          <div class="post-type-badge"><i class="ph-fill ${p.type === 'photo'?'ph-camera':'ph-bible'}"></i> ${p.type}</div>
+          ${p.type === 'photo' 
+            ? `<img src="${p.image_url}" class="post-card-img" onerror="this.outerHTML='<div class=\\'post-card-img\\'><i class=\\'ph-bold ph-image-broken\\'></i></div>'" />` 
+            : `<div class="post-card-img"><i class="ph-bold ph-bible"></i></div>`}
+          <div class="post-card-body">
+            ${p.verse_text ? `<div class="post-card-verse">"${p.verse_text}"</div>` : ''}
+            <div class="post-card-text">${p.caption || p.verse_ref || 'No details'}</div>
+            <div class="post-card-meta">
+              <span>${new Date(p.created_at).toLocaleDateString()}</span>
+              <button class="btn-delete" onclick="deletePost('${p.id}')"><i class="ph-bold ph-trash"></i></button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    window.deletePost = async function(id) {
+      if(!confirm("Delete this post?")) return;
+      try {
+        const { error } = await supabase.from('posts').delete().eq('id', id);
+        if(error) throw error;
+        showToast("Deleted");
+        loadPosts();
+        loadDashboardStats();
+      } catch(err) {
+        showToast("Delete failed", true);
+      }
+    };
+
+    // --- PWA INSTALL ---
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      document.getElementById('install-prompt').style.display = 'flex';
+    });
+
+    document.getElementById('btn-install').addEventListener('click', async () => {
+      if(!deferredPrompt) return;
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if(outcome === 'accepted') {
+        document.getElementById('install-prompt').style.display = 'none';
+      }
+      deferredPrompt = null;
+    });
+    
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./public/admin-sw.js');
+    }
+  </script>
+</body>
+</html>
