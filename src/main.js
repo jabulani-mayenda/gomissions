@@ -160,8 +160,7 @@ async function initGallery() {
           <div class="gallery-empty">
             <i class="ph ph-images"></i>
             <h3>No posts yet</h3>
-            <p>Photos and verses shared by the GFM team will appear here. Use the admin panel to add the first post.</p>
-            <a href="./admin.html" class="btn btn-primary mt-3" target="_blank">Open Admin Panel</a>
+            <p>Photos and verses shared by the GFM team will appear here.</p>
           </div>
         `;
       }
