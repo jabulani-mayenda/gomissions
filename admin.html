@@ -5,12 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex, nofollow" />
   <!-- PWA Manifest -->
-  <link rel="manifest" href="./public/admin-manifest.json" />
+  <link rel="manifest" href="/admin-manifest.json" />
   <meta name="theme-color" content="#081410" />
   <!-- Apple Touch Icon -->
-  <link rel="apple-touch-icon" href="./public/images/logo.jpeg" />
+  <link rel="apple-touch-icon" href="/images/logo.jpeg" />
   <title>GMI Admin Dashboard</title>
-  <link rel="icon" type="image/jpeg" href="./public/images/logo.jpeg" />
+  <link rel="icon" type="image/jpeg" href="/images/logo.jpeg" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet">
@@ -327,7 +327,7 @@
   <!-- LOCK SCREEN -->
   <div id="lock-screen">
     <div class="lock-box">
-      <img src="./public/images/logo.jpeg" alt="GMI" class="lock-logo" />
+      <img src="/images/logo.jpeg" alt="GMI" class="lock-logo" />
       <h2>Admin Login</h2>
       <p>Enter the security pin to access the dashboard.</p>
       <input type="password" id="pin-input" class="lock-input" placeholder="••••" maxlength="12" />
@@ -344,7 +344,7 @@
       <!-- Sidebar -->
       <aside class="sidebar">
         <div class="sidebar-header">
-          <img src="./public/images/logo.jpeg" alt="GMI" class="sidebar-logo" />
+          <img src="/images/logo.jpeg" alt="GMI" class="sidebar-logo" />
           <div>
             <h2>GMI</h2>
             <span>Admin Panel</span>
@@ -837,7 +837,7 @@ create policy "Admin manage posts" on posts for all using (true) with check (tru
     });
     
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./public/admin-sw.js');
+      navigator.serviceWorker.register('/admin-sw.js');
     }
   </script>
 </body>
