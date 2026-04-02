@@ -1,0 +1,710 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>GMI — Post Photos &amp; Verses</title>
+  <link rel="icon" type="image/jpeg" href="./public/images/logo.jpeg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <style>
+    :root {
+      --primary:       #1b4332;
+      --primary-light: #2d6a4f;
+      --accent:        #d4a373;
+      --bg:            #f5f5f0;
+      --white:         #ffffff;
+      --text:          #1f2937;
+      --muted:         #6b7280;
+      --radius:        14px;
+      --ease:          cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ---- Lock Screen ---- */
+    #lock-screen {
+      position: fixed; inset: 0;
+      background: linear-gradient(145deg, #0b2218, #1b4332);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 9999;
+    }
+    .lock-box {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.12);
+      backdrop-filter: blur(20px);
+      border-radius: 24px;
+      padding: 3rem;
+      width: 90%; max-width: 420px;
+      text-align: center;
+    }
+    .lock-logo {
+      width: 80px; height: 80px; border-radius: 50%;
+      object-fit: cover; border: 3px solid var(--accent);
+      margin: 0 auto 1.5rem;
+      display: block;
+    }
+    .lock-box h2 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.8rem; font-weight: 900; color: white; margin-bottom: 0.5rem;
+    }
+    .lock-box p { color: rgba(255,255,255,0.6); margin-bottom: 2rem; font-size: 0.95rem; }
+    .lock-input {
+      width: 100%; padding: 1rem 1.25rem;
+      border: 2px solid rgba(255,255,255,0.15);
+      border-radius: 10px; background: rgba(255,255,255,0.08);
+      color: white; font-size: 1.1rem; font-family: inherit;
+      outline: none; letter-spacing: 4px; text-align: center;
+      transition: border-color 0.3s; margin-bottom: 1rem;
+    }
+    .lock-input::placeholder { letter-spacing: 2px; color: rgba(255,255,255,0.3); }
+    .lock-input:focus { border-color: var(--accent); }
+    .lock-btn {
+      width: 100%; padding: 1rem;
+      background: var(--accent); color: white;
+      font-size: 1rem; font-weight: 700;
+      border: none; border-radius: 10px; cursor: pointer;
+      transition: all 0.3s var(--ease); font-family: inherit;
+    }
+    .lock-btn:hover { background: #c49463; transform: translateY(-2px); }
+    .lock-error {
+      color: #f87171; font-size: 0.9rem; margin-top: 0.75rem;
+      display: none;
+    }
+
+    /* ---- Admin App ---- */
+    #admin-app { display: none; }
+
+    .admin-header {
+      background: linear-gradient(135deg, var(--primary-dark, #0b2218), var(--primary));
+      padding: 1.5rem 0;
+    }
+    .admin-header-inner {
+      width: 90%; max-width: 900px; margin: 0 auto;
+      display: flex; align-items: center; gap: 1rem;
+    }
+    .admin-logo { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent); }
+    .admin-header-inner h1 { font-family: 'Outfit', sans-serif; font-size: 1.4rem; font-weight: 900; color: white; }
+    .admin-header-inner a {
+      margin-left: auto; color: rgba(255,255,255,0.65); font-size: 0.9rem;
+      display: flex; align-items: center; gap: 0.4rem; text-decoration: none;
+      transition: color 0.3s;
+    }
+    .admin-header-inner a:hover { color: var(--accent); }
+
+    .admin-main { width: 90%; max-width: 900px; margin: 0 auto; padding: 3rem 0; }
+
+    /* Firebase setup notice */
+    .setup-notice {
+      background: linear-gradient(135deg, #fef3c7, #fde68a);
+      border: 2px solid #f59e0b;
+      border-radius: var(--radius);
+      padding: 2rem;
+      margin-bottom: 2.5rem;
+      display: flex; gap: 1.25rem; align-items: flex-start;
+    }
+    .setup-notice i { font-size: 2rem; color: #d97706; flex-shrink: 0; margin-top: 0.1rem; }
+    .setup-notice h3 { font-family: 'Outfit', sans-serif; font-weight: 800; color: #92400e; margin-bottom: 0.4rem; }
+    .setup-notice p { font-size: 0.92rem; color: #78350f; line-height: 1.6; }
+    .setup-notice code {
+      background: rgba(0,0,0,0.08); border-radius: 6px;
+      padding: 0.15rem 0.5rem; font-family: monospace; font-size: 0.88rem;
+    }
+
+    /* Tabs */
+    .admin-tabs {
+      display: flex; gap: 0.5rem; margin-bottom: 2rem;
+      background: white; border-radius: var(--radius);
+      padding: 0.5rem; box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+    .admin-tab {
+      flex: 1; padding: 0.85rem; border: none; border-radius: 10px;
+      font-family: inherit; font-size: 0.95rem; font-weight: 700;
+      cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+      background: transparent; color: var(--muted); transition: all 0.3s var(--ease);
+    }
+    .admin-tab.active { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(27,67,50,0.25); }
+    .admin-tab:not(.active):hover { background: var(--bg); color: var(--primary); }
+
+    /* Forms */
+    .admin-panel { display: none; }
+    .admin-panel.active { display: block; }
+    .form-card {
+      background: white; border-radius: 20px;
+      padding: 2.5rem; box-shadow: 0 6px 25px rgba(0,0,0,0.06);
+    }
+    .form-card h2 {
+      font-family: 'Outfit', sans-serif; font-size: 1.5rem; font-weight: 800;
+      color: var(--primary); margin-bottom: 0.4rem;
+    }
+    .form-card > p { color: var(--muted); margin-bottom: 2rem; font-size: 0.95rem; }
+
+    .form-group { margin-bottom: 1.5rem; }
+    .form-group label {
+      display: block; font-size: 0.85rem; font-weight: 700;
+      color: var(--primary); margin-bottom: 0.5rem; letter-spacing: 0.3px;
+    }
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%; padding: 1rem 1.25rem;
+      border: 2px solid #e5e7eb; border-radius: 10px;
+      font-family: inherit; font-size: 1rem; background: #f9fafb;
+      color: var(--text); outline: none; transition: all 0.3s var(--ease);
+    }
+    .form-group textarea { resize: vertical; min-height: 100px; }
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      border-color: var(--primary); background: white;
+      box-shadow: 0 0 0 4px rgba(27,67,50,0.08);
+    }
+    .form-hint { font-size: 0.8rem; color: var(--muted); margin-top: 0.4rem; }
+
+    /* Image upload drop zone */
+    .img-drop-zone {
+      border: 2.5px dashed #d1d5db; border-radius: var(--radius);
+      padding: 2.5rem; text-align: center; cursor: pointer;
+      transition: all 0.3s var(--ease); background: #f9fafb;
+      position: relative;
+    }
+    .img-drop-zone:hover, .img-drop-zone.dragging {
+      border-color: var(--accent); background: #fffbf5;
+    }
+    .img-drop-zone input[type="file"] {
+      position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+    }
+    .img-drop-icon { font-size: 3rem; color: #d1d5db; display: block; margin-bottom: 0.75rem; transition: color 0.3s; }
+    .img-drop-zone:hover .img-drop-icon { color: var(--accent); }
+    .img-drop-zone p { color: var(--muted); font-size: 0.95rem; }
+    .img-drop-zone strong { color: var(--primary); }
+    .img-preview {
+      margin-top: 1rem;
+      max-height: 250px; object-fit: cover;
+      border-radius: 10px; width: 100%; display: none;
+    }
+
+    /* Submit button */
+    .submit-btn {
+      width: 100%; padding: 1.1rem; margin-top: 0.5rem;
+      background: var(--primary); color: white;
+      font-family: inherit; font-size: 1.05rem; font-weight: 800;
+      border: none; border-radius: 12px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 0.75rem;
+      transition: all 0.35s var(--ease);
+    }
+    .submit-btn:hover:not(:disabled) { background: var(--primary-light); transform: translateY(-2px); box-shadow: 0 10px 25px rgba(27,67,50,0.3); }
+    .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    /* Progress bar */
+    .upload-progress {
+      display: none; margin-top: 1.5rem;
+      background: #e5e7eb; border-radius: 50px; height: 8px; overflow: hidden;
+    }
+    .upload-progress-bar { height: 100%; background: var(--primary); border-radius: 50px; width: 0; transition: width 0.4s ease; }
+
+    /* Toast */
+    .toast {
+      position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(100px);
+      background: var(--primary); color: white; padding: 1rem 2rem;
+      border-radius: 50px; font-weight: 700; font-size: 0.95rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      transition: transform 0.4s var(--ease); z-index: 9999;
+      display: flex; align-items: center; gap: 0.7rem;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+    .toast.error { background: #dc2626; }
+
+    /* Posts list */
+    .posts-list { display: flex; flex-direction: column; gap: 1.5rem; }
+    .post-item {
+      background: white; border-radius: var(--radius);
+      padding: 1.5rem; box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      display: flex; gap: 1.25rem; align-items: flex-start;
+    }
+    .post-item img { width: 100px; height: 80px; object-fit: cover; border-radius: 8px; flex-shrink: 0; }
+    .post-item-body { flex: 1; }
+    .post-item-body h4 { font-family: 'Outfit', sans-serif; font-weight: 800; color: var(--primary); margin-bottom: 0.3rem; }
+    .post-item-body p { font-size: 0.9rem; color: var(--muted); }
+    .post-item-body .post-meta { font-size: 0.78rem; color: #aaa; margin-top: 0.5rem; }
+    .post-delete {
+      background: none; border: none; cursor: pointer; color: #f87171;
+      font-size: 1.3rem; padding: 0.3rem; transition: all 0.3s;
+    }
+    .post-delete:hover { transform: scale(1.2); }
+    .posts-empty { text-align: center; padding: 3rem; color: var(--muted); }
+    .posts-empty i { font-size: 3rem; display: block; margin-bottom: 1rem; }
+
+    @media (max-width: 600px) {
+      .admin-tabs { flex-direction: column; }
+      .form-card { padding: 1.75rem; }
+      .post-item { flex-direction: column; }
+      .post-item img { width: 100%; height: 180px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ============ LOCK SCREEN ============ -->
+  <div id="lock-screen">
+    <div class="lock-box">
+      <img src="./public/images/logo.jpeg" alt="GFM Logo" class="lock-logo" />
+      <h2>GMI Admin</h2>
+      <p>Enter your password to post photos and verses.</p>
+      <input type="password" id="pin-input" class="lock-input" placeholder="Enter password" />
+      <button class="lock-btn" id="unlock-btn">
+        <i class="ph-fill ph-lock-open"></i> Unlock
+      </button>
+      <p class="lock-error" id="lock-error">Incorrect password. Try again.</p>
+    </div>
+  </div>
+
+  <!-- ============ ADMIN APP ============ -->
+  <div id="admin-app">
+    <header class="admin-header">
+      <div class="admin-header-inner">
+        <img src="./public/images/logo.jpeg" alt="GFM" class="admin-logo" />
+        <h1>GMI Admin Panel</h1>
+        <a href="./index.html"><i class="ph ph-arrow-left"></i> Back to Site</a>
+      </div>
+    </header>
+
+    <main class="admin-main">
+
+      <!-- Firebase setup notice (shown until configured) -->
+      <div class="setup-notice" id="setup-notice">
+        <i class="ph-fill ph-warning-circle"></i>
+        <div>
+          <h3>Firebase Not Yet Connected</h3>
+          <p>
+            To save posts and show them on your website, you need to connect Firebase.
+            Open the file <code>firebase-config.js</code> and paste in your Firebase credentials.
+            See the step-by-step guide below — it only takes 5 minutes!
+          </p>
+          <p style="margin-top:0.5rem;">
+            <strong>Don't have Firebase?</strong> Follow the instructions at the bottom of this page.
+          </p>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="admin-tabs">
+        <button class="admin-tab active" data-tab="post-photo" id="tab-photo">
+          <i class="ph-fill ph-camera-plus"></i> Post Photo
+        </button>
+        <button class="admin-tab" data-tab="post-verse" id="tab-verse">
+          <i class="ph-fill ph-bible"></i> Post Verse
+        </button>
+        <button class="admin-tab" data-tab="view-posts" id="tab-view">
+          <i class="ph-fill ph-images"></i> View Posts
+        </button>
+      </div>
+
+      <!-- ---- POST PHOTO ---- -->
+      <div class="admin-panel active" id="panel-post-photo">
+        <div class="form-card">
+          <h2>Post a Photo</h2>
+          <p>Upload a photo from your phone or computer. You can add a caption and a Bible verse.</p>
+          <form id="photo-form">
+            <div class="form-group">
+              <label>Photo *</label>
+              <div class="img-drop-zone" id="drop-zone">
+                <input type="file" id="photo-input" accept="image/*" required />
+                <i class="ph ph-image img-drop-icon"></i>
+                <p><strong>Tap to choose a photo</strong></p>
+                <p>or drag and drop here</p>
+                <img id="img-preview" class="img-preview" alt="Preview" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="photo-caption">Caption</label>
+              <textarea id="photo-caption" placeholder="What's happening in this photo? Where was it taken?"></textarea>
+            </div>
+            <div class="form-group">
+              <label for="photo-verse-text">Bible Verse (optional)</label>
+              <textarea id="photo-verse-text" placeholder="e.g. For God so loved the world…" style="min-height:80px;"></textarea>
+            </div>
+            <div class="form-group">
+              <label for="photo-verse-ref">Verse Reference (optional)</label>
+              <input type="text" id="photo-verse-ref" placeholder="e.g. John 3:16" />
+            </div>
+            <div class="form-group">
+              <label for="photo-posted-by">Posted by</label>
+              <input type="text" id="photo-posted-by" placeholder="Your name" />
+            </div>
+            <div class="form-group">
+              <label for="photo-section">Show in section</label>
+              <select id="photo-section">
+                <option value="gallery">Gallery (Life on Mission)</option>
+                <option value="family">Family &amp; Friends</option>
+              </select>
+            </div>
+            <div class="upload-progress" id="upload-progress">
+              <div class="upload-progress-bar" id="upload-progress-bar"></div>
+            </div>
+            <button type="submit" class="submit-btn" id="photo-submit-btn">
+              <i class="ph-fill ph-paper-plane-tilt"></i> Post Photo
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- ---- POST VERSE ---- -->
+      <div class="admin-panel" id="panel-post-verse">
+        <div class="form-card">
+          <h2>Post a Bible Verse</h2>
+          <p>Share a verse that is on your heart — it will appear in the gallery on the website.</p>
+          <form id="verse-form">
+            <div class="form-group">
+              <label for="verse-text">Bible Verse *</label>
+              <textarea id="verse-text" placeholder="Type the verse here…" required style="min-height:120px;"></textarea>
+            </div>
+            <div class="form-group">
+              <label for="verse-ref">Verse Reference *</label>
+              <input type="text" id="verse-ref" placeholder="e.g. Matthew 28:19-20" required />
+            </div>
+            <div class="form-group">
+              <label for="verse-note">Additional Note (optional)</label>
+              <textarea id="verse-note" placeholder="Any thoughts or context you'd like to share…" style="min-height:80px;"></textarea>
+            </div>
+            <div class="form-group">
+              <label for="verse-posted-by">Posted by</label>
+              <input type="text" id="verse-posted-by" placeholder="Your name" />
+            </div>
+            <button type="submit" class="submit-btn" id="verse-submit-btn">
+              <i class="ph-fill ph-paper-plane-tilt"></i> Post Verse
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- ---- VIEW POSTS ---- -->
+      <div class="admin-panel" id="panel-view-posts">
+        <div class="form-card">
+          <h2>All Posts</h2>
+          <p>All photos and verses you have posted. You can delete them here.</p>
+          <div id="posts-container">
+            <div class="posts-empty">
+              <i class="ph ph-images"></i>
+              <p>No posts yet. Go post something!</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Firebase Guide -->
+      <div class="form-card" id="firebase-guide" style="margin-top:2.5rem; border-top: 4px solid var(--accent);">
+        <h2 style="display:flex;align-items:center;gap:0.75rem;">
+          <i class="ph-fill ph-lightning" style="color:var(--accent);"></i>
+          Firebase Setup Guide
+        </h2>
+        <p style="margin-bottom:1.5rem; color:#6b7280;">Follow these steps one time to connect your gallery. It's free and takes about 5 minutes.</p>
+
+        <div style="display:flex;flex-direction:column;gap:1rem;">
+          <div style="display:flex;gap:1rem;align-items:flex-start;padding:1.25rem;background:#f9fafb;border-radius:12px;border-left:4px solid var(--accent);">
+            <span style="font-family:'Outfit';font-size:1.5rem;font-weight:900;color:var(--accent);flex-shrink:0;">1</span>
+            <div>
+              <strong>Go to firebase.google.com</strong>
+              <p style="font-size:0.92rem;color:#6b7280;margin-top:0.25rem;">Sign in with your Google account and click <strong>"Go to Console"</strong>.</p>
+            </div>
+          </div>
+          <div style="display:flex;gap:1rem;align-items:flex-start;padding:1.25rem;background:#f9fafb;border-radius:12px;border-left:4px solid var(--accent);">
+            <span style="font-family:'Outfit';font-size:1.5rem;font-weight:900;color:var(--accent);flex-shrink:0;">2</span>
+            <div>
+              <strong>Create a new project</strong>
+              <p style="font-size:0.92rem;color:#6b7280;margin-top:0.25rem;">Click <strong>"Add project"</strong>, name it <strong>go-missions-international</strong>, and click through the steps (you can disable Analytics).</p>
+            </div>
+          </div>
+          <div style="display:flex;gap:1rem;align-items:flex-start;padding:1.25rem;background:#f9fafb;border-radius:12px;border-left:4px solid var(--accent);">
+            <span style="font-family:'Outfit';font-size:1.5rem;font-weight:900;color:var(--accent);flex-shrink:0;">3</span>
+            <div>
+              <strong>Enable Firestore Database</strong>
+              <p style="font-size:0.92rem;color:#6b7280;margin-top:0.25rem;">In the left menu → <strong>Build → Firestore Database</strong> → click <strong>Create database</strong> → choose <strong>Start in test mode</strong> → select any location → Done.</p>
+            </div>
+          </div>
+          <div style="display:flex;gap:1rem;align-items:flex-start;padding:1.25rem;background:#f9fafb;border-radius:12px;border-left:4px solid var(--accent);">
+            <span style="font-family:'Outfit';font-size:1.5rem;font-weight:900;color:var(--accent);flex-shrink:0;">4</span>
+            <div>
+              <strong>Enable Storage</strong>
+              <p style="font-size:0.92rem;color:#6b7280;margin-top:0.25rem;">In the left menu → <strong>Build → Storage</strong> → click <strong>Get started</strong> → choose <strong>Start in test mode</strong> → Done.</p>
+            </div>
+          </div>
+          <div style="display:flex;gap:1rem;align-items:flex-start;padding:1.25rem;background:#f9fafb;border-radius:12px;border-left:4px solid var(--accent);">
+            <span style="font-family:'Outfit';font-size:1.5rem;font-weight:900;color:var(--accent);flex-shrink:0;">5</span>
+            <div>
+              <strong>Get your config keys</strong>
+              <p style="font-size:0.92rem;color:#6b7280;margin-top:0.25rem;">Click the ⚙️ gear icon → <strong>Project settings</strong> → scroll down to <strong>"Your apps"</strong> → click the <strong>&lt;/&gt; Web</strong> icon → register the app → copy the <code style="background:#e5e7eb;padding:0.1rem 0.4rem;border-radius:4px;">firebaseConfig</code> object.</p>
+            </div>
+          </div>
+          <div style="display:flex;gap:1rem;align-items:flex-start;padding:1.25rem;background:#fefbf0;border-radius:12px;border-left:4px solid #f59e0b;">
+            <span style="font-family:'Outfit';font-size:1.5rem;font-weight:900;color:#f59e0b;flex-shrink:0;">6</span>
+            <div>
+              <strong>Paste the keys into firebase-config.js</strong>
+              <p style="font-size:0.92rem;color:#6b7280;margin-top:0.25rem;">Open the file <code style="background:#e5e7eb;padding:0.1rem 0.4rem;border-radius:4px;">firebase-config.js</code> in your project folder and replace <code style="background:#e5e7eb;padding:0.1rem 0.4rem;border-radius:4px;">PASTE_YOUR_API_KEY_HERE</code> and the other values with what you copied. Save the file and you're done!</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Toast notification -->
+  <div class="toast" id="toast"></div>
+
+  <script type="module">
+    // ---- Simple password lock ----
+    const ADMIN_PASSWORD = 'admin1234'; // Change this to your own password!
+    const pinInput  = document.getElementById('pin-input');
+    const unlockBtn = document.getElementById('unlock-btn');
+    const lockError = document.getElementById('lock-error');
+
+    // Auto-unlock if stored in session
+    if (sessionStorage.getItem('gfm-unlocked') === 'yes') {
+      document.getElementById('lock-screen').style.display = 'none';
+      document.getElementById('admin-app').style.display   = 'block';
+    }
+
+    unlockBtn.addEventListener('click', tryUnlock);
+    pinInput.addEventListener('keydown', e => { if (e.key === 'Enter') tryUnlock(); });
+
+    function tryUnlock() {
+      if (pinInput.value === ADMIN_PASSWORD) {
+        sessionStorage.setItem('gfm-unlocked', 'yes');
+        document.getElementById('lock-screen').style.display = 'none';
+        document.getElementById('admin-app').style.display   = 'block';
+        loadPosts();
+      } else {
+        lockError.style.display = 'block';
+        pinInput.value = '';
+        pinInput.focus();
+        pinInput.style.borderColor = '#f87171';
+        setTimeout(() => { pinInput.style.borderColor = ''; }, 1500);
+      }
+    }
+
+    // ---- Tabs ----
+    document.querySelectorAll('.admin-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('active'));
+        tab.classList.add('active');
+        const panelId = 'panel-' + tab.dataset.tab;
+        document.getElementById(panelId).classList.add('active');
+        if (tab.dataset.tab === 'view-posts') loadPosts();
+      });
+    });
+
+    // ---- Image preview ----
+    const photoInput = document.getElementById('photo-input');
+    const imgPreview = document.getElementById('img-preview');
+    const dropZone   = document.getElementById('drop-zone');
+
+    photoInput.addEventListener('change', () => {
+      const file = photoInput.files[0];
+      if (file) {
+        imgPreview.src = URL.createObjectURL(file);
+        imgPreview.style.display = 'block';
+      }
+    });
+    dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragging'); });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragging'));
+    dropZone.addEventListener('drop', e => {
+      e.preventDefault(); dropZone.classList.remove('dragging');
+      const file = e.dataTransfer.files[0];
+      if (file && file.type.startsWith('image/')) {
+        photoInput.files = e.dataTransfer.files;
+        imgPreview.src = URL.createObjectURL(file);
+        imgPreview.style.display = 'block';
+      }
+    });
+
+    // ---- Toast ----
+    function showToast(msg, isError = false) {
+      const toast = document.getElementById('toast');
+      toast.innerHTML = `<i class="ph-fill ph-${isError ? 'warning' : 'check-circle'}"></i> ${msg}`;
+      toast.className = 'toast show' + (isError ? ' error' : '');
+      setTimeout(() => toast.classList.remove('show'), 4000);
+    }
+
+    // ---- Firebase (dynamic import) ----
+    let db, storage, firebase_initialized = false;
+
+    async function initFirebase() {
+      if (firebase_initialized) return true;
+      try {
+        const { default: config } = await import('./firebase-config.js');
+        if (!config.apiKey || config.apiKey === 'PASTE_YOUR_API_KEY_HERE') {
+          document.getElementById('setup-notice').style.display = 'flex';
+          return false;
+        }
+        const { initializeApp }     = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
+        const { getFirestore }      = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+        const { getStorage }        = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js');
+        const app = initializeApp(config);
+        db      = getFirestore(app);
+        storage = getStorage(app);
+        firebase_initialized = true;
+        document.getElementById('setup-notice').style.display = 'none';
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
+    // ---- POST PHOTO ----
+    document.getElementById('photo-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('photo-submit-btn');
+      const ok  = await initFirebase();
+      if (!ok) { showToast('Please set up Firebase first — see the guide below.', true); return; }
+
+      const file      = photoInput.files[0];
+      const caption   = document.getElementById('photo-caption').value.trim();
+      const verseText = document.getElementById('photo-verse-text').value.trim();
+      const verseRef  = document.getElementById('photo-verse-ref').value.trim();
+      const postedBy  = document.getElementById('photo-posted-by').value.trim() || 'GMI Team';
+      const section   = document.getElementById('photo-section').value;
+
+      if (!file) { showToast('Please select a photo.', true); return; }
+
+      btn.disabled = true;
+      btn.innerHTML = '<i class="ph ph-spinner"></i> Uploading…';
+
+      const progressWrap = document.getElementById('upload-progress');
+      const progressBar  = document.getElementById('upload-progress-bar');
+      progressWrap.style.display = 'block';
+
+      try {
+        const { ref, uploadBytesResumable, getDownloadURL } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js');
+        const { addDoc, collection, serverTimestamp }       = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+
+        const storRef  = ref(storage, `posts/${Date.now()}_${file.name}`);
+        const task     = uploadBytesResumable(storRef, file);
+
+        task.on('state_changed',
+          snap => {
+            const pct = (snap.bytesTransferred / snap.totalBytes) * 100;
+            progressBar.style.width = pct + '%';
+          },
+          err => { throw err; },
+          async () => {
+            const url = await getDownloadURL(task.snapshot.ref);
+            await addDoc(collection(db, 'posts'), {
+              imageUrl: url, caption, verseText, verseRef, postedBy, section,
+              type: 'photo', createdAt: serverTimestamp()
+            });
+            showToast('Photo posted! It will appear on the website.');
+            e.target.reset();
+            imgPreview.style.display = 'none';
+            progressWrap.style.display = 'none';
+            progressBar.style.width = '0';
+          }
+        );
+      } catch (err) {
+        showToast('Upload failed: ' + err.message, true);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="ph-fill ph-paper-plane-tilt"></i> Post Photo';
+      }
+    });
+
+    // ---- POST VERSE ----
+    document.getElementById('verse-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('verse-submit-btn');
+      const ok  = await initFirebase();
+      if (!ok) { showToast('Please set up Firebase first — see the guide below.', true); return; }
+
+      const verseText = document.getElementById('verse-text').value.trim();
+      const verseRef  = document.getElementById('verse-ref').value.trim();
+      const note      = document.getElementById('verse-note').value.trim();
+      const postedBy  = document.getElementById('verse-posted-by').value.trim() || 'GMI Team';
+
+      if (!verseText || !verseRef) { showToast('Please fill in the verse and its reference.', true); return; }
+
+      btn.disabled = true;
+      btn.innerHTML = '<i class="ph ph-spinner"></i> Posting…';
+
+      try {
+        const { addDoc, collection, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+        await addDoc(collection(db, 'posts'), {
+          verseText, verseRef, caption: note, postedBy,
+          type: 'verse', section: 'gallery', createdAt: serverTimestamp()
+        });
+        showToast('Verse posted! It will appear on the website.');
+        e.target.reset();
+      } catch (err) {
+        showToast('Error: ' + err.message, true);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="ph-fill ph-paper-plane-tilt"></i> Post Verse';
+      }
+    });
+
+    // ---- LOAD POSTS ----
+    async function loadPosts() {
+      const container = document.getElementById('posts-container');
+      container.innerHTML = '<p style="text-align:center;padding:2rem;color:#aaa;">Loading…</p>';
+      const ok = await initFirebase();
+      if (!ok) {
+        container.innerHTML = `<div class="posts-empty"><i class="ph ph-cloud-slash"></i><p>Firebase not connected. See the setup guide below.</p></div>`;
+        return;
+      }
+      try {
+        const { getDocs, collection, orderBy, query, deleteDoc, doc } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+        const q    = query(collection(db, 'posts'), orderBy('createdAt', 'desc'));
+        const snap = await getDocs(q);
+        if (snap.empty) {
+          container.innerHTML = `<div class="posts-empty"><i class="ph ph-images"></i><p>No posts yet. Go post something!</p></div>`;
+          return;
+        }
+        container.innerHTML = '<div class="posts-list"></div>';
+        const list = container.querySelector('.posts-list');
+        snap.forEach(docSnap => {
+          const d   = docSnap.data();
+          const date = d.createdAt?.toDate?.()
+            ? d.createdAt.toDate().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
+            : 'Just now';
+          const item = document.createElement('div');
+          item.className = 'post-item';
+          item.innerHTML = `
+            ${d.imageUrl ? `<img src="${d.imageUrl}" alt="Post" />` : '<div style="width:100px;height:80px;background:#f3f4f6;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;"><i class="ph ph-bible" style="font-size:2rem;color:#d1d5db;"></i></div>'}
+            <div class="post-item-body">
+              ${d.verseText ? `<h4>"${d.verseText}"</h4>` : ''}
+              ${d.verseRef  ? `<p style="color:var(--accent);font-weight:700;font-size:0.85rem;">— ${d.verseRef}</p>` : ''}
+              ${d.caption   ? `<p>${d.caption}</p>` : ''}
+              <div class="post-meta"><i class="ph ph-calendar-blank"></i> ${date} · By ${d.postedBy || 'GMI Team'} · Section: ${d.section || 'gallery'}</div>
+            </div>
+            <button class="post-delete" title="Delete this post" data-id="${docSnap.id}">
+              <i class="ph-fill ph-trash"></i>
+            </button>
+          `;
+          list.appendChild(item);
+        });
+        list.querySelectorAll('.post-delete').forEach(btn => {
+          btn.addEventListener('click', async () => {
+            if (!confirm('Delete this post? This cannot be undone.')) return;
+            await deleteDoc(doc(db, 'posts', btn.dataset.id));
+            showToast('Post deleted.');
+            loadPosts();
+          });
+        });
+      } catch (err) {
+        container.innerHTML = `<div class="posts-empty"><i class="ph ph-warning"></i><p>${err.message}</p></div>`;
+      }
+    }
+
+    // Init on load if already unlocked
+    if (sessionStorage.getItem('gfm-unlocked') === 'yes') initFirebase();
+  </script>
+</body>
+</html>
