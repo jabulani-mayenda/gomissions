@@ -116,6 +116,7 @@ async function initGallery() {
     const { data: snap, error } = await supabase
       .from('posts')
       .select('*')
+      .neq('type', 'friend')
       .order('created_at', { ascending: false })
       .limit(30);
 
@@ -184,7 +185,48 @@ async function initGallery() {
   }
 }
 
+async function initFriends() {
+  const gridEl = document.getElementById('friends-grid');
+  if (!gridEl || !supabase) return;
+
+  try {
+    const { data: snap, error } = await supabase
+      .from('posts')
+      .select('*')
+      .eq('type', 'friend')
+      .order('created_at', { ascending: true }) // You can adjust order
+      .limit(20);
+
+    if (error) throw error;
+
+    if (snap && snap.length > 0) {
+      gridEl.innerHTML = ''; // Clear placeholders
+      snap.forEach(d => {
+        const card = document.createElement('div');
+        card.className = 'friend-card reveal-up';
+        card.innerHTML = `
+          <div class="friend-img-wrap">
+            ${d.image_url 
+              ? `<img src="${d.image_url}" alt="${d.verse_text || 'Friend'}" loading="lazy" />` 
+              : `<div class="placeholder-img"><i class="ph ph-user-circle"></i></div>`}
+          </div>
+          <div class="friend-info">
+            <h4>${d.verse_text || 'Friend & Supporter'}</h4>
+            <p style="font-weight: 600; color: var(--accent); margin-bottom: 0.5rem; font-size: 0.8rem;">${d.verse_ref || 'Community'}</p>
+            <p>${d.caption || ''}</p>
+          </div>
+        `;
+        gridEl.appendChild(card);
+        setTimeout(() => card.classList.add('active'), 100);
+      });
+    }
+  } catch(err) {
+    console.warn('Friends: Supabase error —', err.message);
+  }
+}
+
 initGallery();
+initFriends();
 
 // ---- Volunteer Form — save to Supabase ----
 const volForm = document.getElementById('volunteer-form');

@@ -360,6 +360,9 @@
           <button class="nav-item" data-target="verse">
             <i class="ph-fill ph-bible"></i> Post Verse
           </button>
+          <button class="nav-item" data-target="friend">
+            <i class="ph-fill ph-users"></i> Add Friend
+          </button>
           <button class="nav-item" data-target="manage">
             <i class="ph-fill ph-folder-open"></i> Manage Posts
           </button>
@@ -472,12 +475,46 @@
             </div>
           </div>
 
+          <!-- POST FRIEND PANEL -->
+          <div id="panel-friend" class="panel">
+            <div class="form-card">
+              <h2>Add Family/Friend</h2>
+              <p>Add a community supporter, partner, or friend to the website.</p>
+              <form id="form-friend">
+                <div class="form-group">
+                  <div class="drop-zone" id="friend-drop-zone">
+                    <input type="file" id="friend-file" accept="image/*" required />
+                    <i class="ph-fill ph-user-circle drop-icon"></i>
+                    <p><strong>Click to browse</strong> or drag & drop</p>
+                    <img id="friend-preview" class="img-preview" />
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="friend-name">Name *</label>
+                  <input type="text" id="friend-name" placeholder="E.g. John Doe" required />
+                </div>
+                <div class="form-group">
+                  <label for="friend-role">Role / Relationship *</label>
+                  <input type="text" id="friend-role" placeholder="E.g. Friend & Supporter" required />
+                </div>
+                <div class="form-group">
+                  <label for="friend-desc">Description</label>
+                  <textarea id="friend-desc" placeholder="A brief background..."></textarea>
+                </div>
+                <button type="submit" id="btn-submit-friend" class="btn btn-primary">
+                  <i class="ph-bold ph-user-plus"></i> Add to Website
+                </button>
+              </form>
+            </div>
+          </div>
+
           <!-- MANAGE POSTS PANEL -->
           <div id="panel-manage" class="panel">
             <div class="filters">
               <button class="filter-btn active" data-filter="all">All</button>
-              <button class="filter-btn" data-filter="photo">Photos Only</button>
-              <button class="filter-btn" data-filter="verse">Verses Only</button>
+              <button class="filter-btn" data-filter="photo">Photos</button>
+              <button class="filter-btn" data-filter="verse">Verses</button>
+              <button class="filter-btn" data-filter="friend">Friends</button>
             </div>
             
             <div id="manage-grid" class="post-grid">
@@ -612,7 +649,7 @@ create policy "Admin manage posts" on posts for all using (true) with check (tru
       if(btn) btn.classList.add('active');
       document.getElementById(`panel-${target}`).classList.add('active');
       
-      const titles = { overview: "Overview", photo: "Post Photo", verse: "Post Verse", manage: "Manage Posts", settings: "Setup & Config" };
+      const titles = { overview: "Overview", photo: "Post Photo", verse: "Post Verse", friend: "Add Family/Friend", manage: "Manage Posts", settings: "Setup & Config" };
       title.innerText = titles[target];
       if(target === 'manage') loadPosts();
     };
@@ -725,6 +762,75 @@ create policy "Admin manage posts" on posts for all using (true) with check (tru
       btn.disabled = false; btn.innerHTML = '<i class="ph-bold ph-paper-plane-tilt"></i> Upload Photo';
     });
 
+    // --- SECOND UPLOAD SYSTEM: FRIEND ---
+    const friendDropZone = document.getElementById('friend-drop-zone');
+    const friendFileInput = document.getElementById('friend-file');
+    const friendPreview = document.getElementById('friend-preview');
+    let selectedFriendFile = null;
+
+    friendDropZone.addEventListener('dragover', e => { e.preventDefault(); friendDropZone.classList.add('dragging'); });
+    friendDropZone.addEventListener('dragleave', () => friendDropZone.classList.remove('dragging'));
+    friendDropZone.addEventListener('drop', e => {
+      e.preventDefault(); friendDropZone.classList.remove('dragging');
+      if(e.dataTransfer.files[0]) handleFriendFile(e.dataTransfer.files[0]);
+    });
+    friendFileInput.addEventListener('change', e => {
+      if(e.target.files[0]) handleFriendFile(e.target.files[0]);
+    });
+
+    function handleFriendFile(f) {
+      if(!f.type.startsWith('image/')) return showToast("Only images allowed", true);
+      selectedFriendFile = f;
+      const reader = new FileReader();
+      reader.onload = e => {
+        friendPreview.src = e.target.result;
+        friendPreview.style.display = 'block';
+        friendDropZone.querySelector('i').style.display = 'none';
+        friendDropZone.querySelector('p').style.display = 'none';
+      };
+      reader.readAsDataURL(f);
+    }
+
+    // --- FORM: FRIEND ---
+    document.getElementById('form-friend').addEventListener('submit', async e => {
+      e.preventDefault();
+      if(!supabase) return showToast("DB not connected", true);
+      if(!selectedFriendFile) return showToast("Select an image first", true);
+      
+      const btn = document.getElementById('btn-submit-friend');
+      btn.disabled = true; btn.innerHTML = '<i class="ph-bold ph-spinner-gap"></i> Uploading...';
+
+      try {
+        const fileExt = selectedFriendFile.name.split('.').pop();
+        const fileName = `friend-${Math.random()}.${fileExt}`;
+        
+        const { error: upErr } = await supabase.storage.from('gallery').upload(fileName, selectedFriendFile);
+        if(upErr) throw upErr;
+
+        const { data: pubUrl } = supabase.storage.from('gallery').getPublicUrl(fileName);
+
+        const { error: dbErr } = await supabase.from('posts').insert([{
+          type: 'friend',
+          image_url: pubUrl.publicUrl,
+          caption: document.getElementById('friend-desc').value,
+          verse_text: document.getElementById('friend-name').value, // Using verse_text for Name explicitly
+          verse_ref: document.getElementById('friend-role').value    // Using verse_ref for Role explicitly
+        }]);
+        if(dbErr) throw dbErr;
+
+        showToast("Friend added successfully!");
+        e.target.reset();
+        friendPreview.style.display = 'none';
+        friendDropZone.querySelector('i').style.display = 'block';
+        friendDropZone.querySelector('p').style.display = 'block';
+        selectedFriendFile = null;
+        loadDashboardStats();
+      } catch (err) {
+        showToast("Error: " + err.message, true);
+      }
+      btn.disabled = false; btn.innerHTML = '<i class="ph-bold ph-user-plus"></i> Add to Website';
+    });
+
     // --- FORM: VERSE ---
     document.getElementById('form-verse').addEventListener('submit', async e => {
       e.preventDefault();
@@ -788,8 +894,8 @@ create policy "Admin manage posts" on posts for all using (true) with check (tru
 
       grid.innerHTML = filtered.map(p => `
         <div class="post-card">
-          <div class="post-type-badge"><i class="ph-fill ${p.type === 'photo'?'ph-camera':'ph-bible'}"></i> ${p.type}</div>
-          ${p.type === 'photo' 
+          <div class="post-type-badge"><i class="ph-fill ${p.type === 'photo'?'ph-camera': p.type === 'friend' ? 'ph-user' : 'ph-bible'}"></i> ${p.type}</div>
+          ${(p.type === 'photo' || p.type === 'friend') 
             ? `<img src="${p.image_url}" class="post-card-img" onerror="this.outerHTML='<div class=\\'post-card-img\\'><i class=\\'ph-bold ph-image-broken\\'></i></div>'" />` 
             : `<div class="post-card-img"><i class="ph-bold ph-bible"></i></div>`}
           <div class="post-card-body">
