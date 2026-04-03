@@ -661,7 +661,6 @@ create policy "Admin manage posts" on posts for all using (true) with check (tru
     const preview = document.getElementById('photo-preview');
     let selectedFile = null;
 
-    dropZone.addEventListener('click', () => fileInput.click());
     dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragging'); });
     dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragging'));
     dropZone.addEventListener('drop', e => {
