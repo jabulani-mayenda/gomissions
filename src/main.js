@@ -56,9 +56,12 @@ revealEls.forEach(el => revealObs.observe(el));
 const flipCards = document.querySelectorAll('.flip-card');
 const flipObs = new IntersectionObserver((entries) => {
   entries.forEach(e => {
-    if (e.isIntersecting && window.innerWidth < 768) {
-      e.target.classList.add('hinted');
-      setTimeout(() => e.target.classList.remove('hinted'), 1200);
+    if (e.isIntersecting) {
+      setTimeout(() => {
+        e.target.classList.add('hinted');
+        setTimeout(() => e.target.classList.remove('hinted'), 1800);
+      }, 300);
+      flipObs.unobserve(e.target);
     }
   });
 }, { threshold: 0.5 });
